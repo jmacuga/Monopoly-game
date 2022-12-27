@@ -1,0 +1,12 @@
+[
+    {
+        "text": "Income tax refund. Collect $20",
+        "action": "collect",
+        "money": 20
+    },
+    {
+        "text": "Doctor's fee. Pay $50",
+        "action": "pay",
+        "money": 50
+    }
+]

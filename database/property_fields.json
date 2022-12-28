@@ -1,7 +1,92 @@
 [
     {
-        "property_colour": "grey",
-        "name": "station",
+        "type": "property",
+        "colour": "grey",
+        "field_id": 4,
+        "name": "station_one",
         "rent": 50
+    },
+    {
+        "type": "property",
+        "colour": "black",
+        "field_id": 9,
+        "name": "airport_chopin",
+        "rent": 50
+    },
+    {
+        "type": "street",
+        "colour": "blue",
+        "field_id": 5,
+        "name": "mediterean avenue",
+        "rent": 2,
+        "other_rents": {
+            "w_one_house": 30,
+            "w_two_houses": 90,
+            "w_three_houses": 180,
+            "w_four_houses": 320,
+            "w_hotel": 550,
+            "mortgage": 30
+        },
+        "prices": {
+            "house_cost": 50,
+            "hotel_cost": 50
+        }
+    },
+    {
+        "type": "street",
+        "colour": "blue",
+        "field_id": 6,
+        "name": "golden av",
+        "rent": 2,
+        "other_rents": {
+            "w_one_house": 30,
+            "w_two_houses": 90,
+            "w_three_houses": 180,
+            "w_four_houses": 320,
+            "w_hotel": 550,
+            "mortgage": 30
+        },
+        "prices": {
+            "house_cost": 50,
+            "hotel_cost": 50
+        }
+    },
+    {
+        "type": "street",
+        "colour": "yellow",
+        "field_id": 7,
+        "name": "london str",
+        "rent": 2,
+        "other_rents": {
+            "w_one_house": 30,
+            "w_two_houses": 90,
+            "w_three_houses": 180,
+            "w_four_houses": 320,
+            "w_hotel": 550,
+            "mortgage": 30
+        },
+        "prices": {
+            "house_cost": 50,
+            "hotel_cost": 50
+        }
+    },
+    {
+        "type": "street",
+        "colour": "yellow",
+        "field_id": 8,
+        "name": "may av",
+        "rent": 2,
+        "other_rents": {
+            "w_one_house": 30,
+            "w_two_houses": 90,
+            "w_three_houses": 180,
+            "w_four_houses": 320,
+            "w_hotel": 550,
+            "mortgage": 30
+        },
+        "prices": {
+            "house_cost": 50,
+            "hotel_cost": 50
+        }
     }
 ]

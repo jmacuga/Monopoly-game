@@ -1,0 +1,18 @@
+[
+    {
+        "field_id": 0,
+        "name": "jail"
+    },
+    {
+        "field_id": 1,
+        "name": "go to jail"
+    },
+    {
+        "field_id": 2,
+        "name": "chance"
+    },
+    {
+        "field_id": 3,
+        "name": "community chest"
+    }
+]

@@ -1,5 +1,6 @@
 [
     {
+        "chance_id": 0,
         "text": "Income tax refund. Collect $20",
         "action": "collect",
         "money": 20

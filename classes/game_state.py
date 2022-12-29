@@ -1,5 +1,5 @@
 class GameState:
-    def __init__(self, players, max_rounds_num, board):
+    def __init__(self, board, players, max_rounds_num=20):
         self._players = players
         self._max_rounds_num = max_rounds_num
         self._board = board
@@ -13,4 +13,7 @@ class GameState:
         pass
 
     def make_move(self):
+        pass
+
+    def prepare_game(self):
         pass

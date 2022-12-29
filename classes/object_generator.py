@@ -1,5 +1,5 @@
 import json
-from classes.field import PropertyField, Street
+from .field import PropertyField, Street
 
 
 class DoubleFieldIdError:
@@ -33,9 +33,14 @@ def generate_property_fields(filename):
     return fields
 
 
-def generate_special_fields(self, filename):
+def generate_number_of_colour(filename):
+    number_of_colour = load_from_file(filename)
+    return number_of_colour
+
+
+def generate_special_fields(filename):
     pass
 
 
-def generate_chance_cards(self, filename):
+def generate_chance_cards(filename):
     pass

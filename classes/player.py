@@ -26,7 +26,7 @@ class Player:
         self._name = name
         if self._name is None:
             self._name = ''
-        self._owned_property_fields = {}
+        self._owned_property_fields = set()
         self._current_dice_roll_sum = None
         self._is_in_jail = False
         self._money = 0
@@ -73,18 +73,13 @@ class Player:
             raise TypeError
         if field_id in self._owned_property_fields:
             raise FieldIdError
-        self._owned_property_fields.append(field_id)
-
-    def get_owned_property_by_id(self, searched_id):
-        for index, field_id in enumerate(self._owned_property_fields):
-            if field_id == searched_id:
-                return index
+        self._owned_property_fields.add(field_id)
 
     def sell_property(self, field_id):
-        if field_id not in self._owned_property_fields:
-            raise FieldIdError
-        index = self.get_owned_property_by_id(field_id)
-        self._owned_property_fields.pop(index)
+        try:
+            self._owned_property_fields.remove(field_id)
+        except(KeyError):
+            raise FieldIdError("Field already owned by player")
 
     def put_in_jail(self, JAIL_FIELD_ID):
         if self._is_in_jail:

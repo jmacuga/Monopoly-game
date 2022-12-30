@@ -19,8 +19,15 @@ class Board:
             self._chance_cards = []
         if community_chest_cards is None:
             self._community_chest_cards = []
-        self._all_fields = self._property_fields + self._special_fields
+
+        self._all_fields = self.generate_all_fields_dict()
         self._number_of_fields_colour = num_of_fields_col
+
+    def generate_all_fields_dict(self):
+        all_fields = {}
+        for field in self._property_fields + self._special_fields:
+            all_fields[field.field_id()] = field
+        return all_fields
 
     def get_field_by_id(self, id):
         for field in self._all_fields:

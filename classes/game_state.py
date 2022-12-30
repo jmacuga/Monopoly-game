@@ -14,6 +14,3 @@ class GameState:
 
     def make_move(self):
         pass
-
-    def prepare_game(self):
-        pass

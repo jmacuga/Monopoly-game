@@ -11,7 +11,7 @@ def load_from_file(file_name):
         return json.load(fp)
 
 
-def generate_property_fields(filename):
+def property_fields_from_json(filename):
     fields_collection = load_from_file(filename)
     fields = []
     for field_elem in fields_collection:
@@ -33,14 +33,14 @@ def generate_property_fields(filename):
     return fields
 
 
-def generate_number_of_colour(filename):
+def number_of_colour_from_json(filename):
     number_of_colour = load_from_file(filename)
     return number_of_colour
 
 
-def generate_special_fields(filename):
+def special_fields_form_json(filename):
     pass
 
 
-def generate_chance_cards(filename):
+def chance_cards_from_json(filename):
     pass

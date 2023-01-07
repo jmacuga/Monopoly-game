@@ -1,6 +1,6 @@
-import ..classes.fields_from_json as ffjson
-from .classes.board import Board
-from ..classes.field import Street, PropertyField
+import classes.fields_from_json as ffjson
+from classes.board import Board
+from classes.field import Street, PropertyField
 from classes.player import Player
 from classes.game import Game
 

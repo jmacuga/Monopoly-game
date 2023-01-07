@@ -1,5 +1,5 @@
-from .game import Game
-from .field import PropertyField
+from classes.game import Game
+from classes.field import PropertyField
 from enum import Enum, auto
 
 

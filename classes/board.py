@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import List, Dict
-from .field import Field
+from classes.field import Field
 
 
 class Board:

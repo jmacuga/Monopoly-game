@@ -1,5 +1,5 @@
 import json
-from .field import PropertyField, Street, SpecialField
+from classes.field import PropertyField, Street, SpecialField
 
 
 class DoubleFieldIdError:

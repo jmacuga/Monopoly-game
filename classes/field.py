@@ -1,5 +1,5 @@
 from __future__ import annotations
-from .player import Player
+from classes.player import Player
 from typing import Dict, List
 
 

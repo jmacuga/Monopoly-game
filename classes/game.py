@@ -1,6 +1,6 @@
-from .field import Field
-from .player import Player
-from .board import Board
+from classes.field import Field
+from classes.player import Player
+from classes.board import Board
 from random import randint
 INITIAL_MPP = 1500
 

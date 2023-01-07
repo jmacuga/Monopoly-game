@@ -12,7 +12,7 @@ class TestBoard:
     property_fields = ffjson.property_fields_from_json(
         PROPERTY_FIELDS)
     num_of_colour = ffjson.number_of_colour_from_json(NUM_OF_COLOUR)
-    special_fields = ffjson.special_fields_form_json(SPECIAL_FIELDS)
+    special_fields = ffjson.special_fields_from_json(SPECIAL_FIELDS)
 
     def test_board_get_field_by_id(self):
         board = Board(self.property_fields, self.num_of_colour)

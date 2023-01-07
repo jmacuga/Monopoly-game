@@ -1,6 +1,6 @@
-import classes.fields_from_json as ffjson
-from classes.board import Board
-from classes.field import Street, PropertyField
+import ..classes.fields_from_json as ffjson
+from .classes.board import Board
+from ..classes.field import Street, PropertyField
 from classes.player import Player
 from classes.game import Game
 
@@ -13,7 +13,7 @@ class TestGame:
     property_fields = ffjson.property_fields_from_json(
         PROPERTY_FIELDS)
     num_of_colour = ffjson.number_of_colour_from_json(NUM_OF_COLOUR)
-    special_fields = ffjson.special_fields_form_json(SPECIAL_FIELDS)
+    special_fields = ffjson.special_fields_from_json(SPECIAL_FIELDS)
     board = Board(property_fields, num_of_colour, special_fields)
     player1 = Player()
     player2 = Player()

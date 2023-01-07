@@ -2,14 +2,14 @@
     {
         "type": "property",
         "colour": "grey",
-        "field_id": 4,
+        "field_id": 1,
         "name": "station_one",
         "rent": 50
     },
     {
         "type": "property",
         "colour": "black",
-        "field_id": 9,
+        "field_id": 2,
         "name": "airport_chopin",
         "rent": 50
     },
@@ -35,7 +35,7 @@
     {
         "type": "street",
         "colour": "blue",
-        "field_id": 6,
+        "field_id": 7,
         "name": "golden av",
         "rent": 2,
         "other_rents": {
@@ -54,7 +54,7 @@
     {
         "type": "street",
         "colour": "yellow",
-        "field_id": 7,
+        "field_id": 6,
         "name": "london str",
         "rent": 2,
         "other_rents": {

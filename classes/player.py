@@ -61,6 +61,7 @@ class Player:
         self._current_pawn_position = field_id
 
     def spend_money(self, amount):
+        # TODO if amount > self.money
         check_amount_of_money(amount)
         self._money -= amount
 

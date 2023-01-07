@@ -1,5 +1,5 @@
 import json
-from .field import PropertyField, Street
+from .field import PropertyField, Street, SpecialField
 
 
 class DoubleFieldIdError:
@@ -35,11 +35,20 @@ def property_fields_from_json(filename):
 
 def number_of_colour_from_json(filename):
     number_of_colour = load_from_file(filename)
-    return number_of_colour
+    return number_of_colour[0]
 
 
-def special_fields_form_json(filename):
-    pass
+def special_fields_from_json(filename):
+    fields_collection = load_from_file(filename)
+    fields = []
+    for field_elem in fields_collection:
+        field_id = field_elem['field_id']
+        if field_id in [field.field_id() for field in fields]:
+            raise DoubleFieldIdError
+        field_name = field_elem['name']
+        field = SpecialField(field_id, field_name)
+        fields.append(field)
+    return fields
 
 
 def chance_cards_from_json(filename):

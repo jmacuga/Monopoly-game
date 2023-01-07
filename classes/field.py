@@ -1,6 +1,10 @@
 from __future__ import annotations
 from .player import Player
-from typing import Dict
+from typing import Dict, List
+
+
+class PlayerError(Exception):
+    pass
 
 
 class HousesNumError(Exception):
@@ -15,12 +19,27 @@ class Field:
     def __init__(self, field_id: int, name: str):
         self._field_id = field_id
         self._name = name
+        self._players_on = {}
 
     def field_id(self):
         return self._field_id
 
     def name(self):
         return self._name
+
+    def get_players_on_ids(self) -> List:
+        # returns list of ids of players that currently stand on field
+        return list(self._players_on.keys())
+
+    def put_player_on(self, player: Player):
+        if player.player_id() in self._players_on:
+            raise PlayerError('Player already on field')
+        self._players_on[player.player_id()] = player
+
+    def take_player_from(self, player: Player):
+        if player.player_id() not in self._players_on:
+            raise PlayerError('Player not on field')
+        self._players_on.pop(player.player_id())
 
 
 class PropertyField(Field):
@@ -111,6 +130,11 @@ class Street(PropertyField):
 
     def mortgage_price(self):
         return self._other_rents['mortgage']
+
+
+class SpecialField(Field):
+    def __init__(self, field_id, name):
+        super().__init__(field_id, name)
 
 
 class Station(PropertyField):

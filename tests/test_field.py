@@ -1,10 +1,12 @@
-from classes.field import PropertyField, Street, HousesNumError, HotelError
+from classes.field import PropertyField, Street
+from classes.field import HousesNumError, HotelError, PlayerError
 from classes.player import Player
 import pytest
 
 
 class TestField:
     field = PropertyField(0, 'start', 'blue', 50)
+    other_field = PropertyField(20, 'train station', 'green', 50)
 
     def test_set_rent(self):
         assert self.field.base_rent() == 50
@@ -21,6 +23,30 @@ class TestField:
         assert self.field.owner() is None
         self.field.set_owner(player)
         assert self.field.owner() == player
+
+    def test_put_player_on_field(self):
+        player = Player()
+        self.field.put_player_on(player)
+        assert player.player_id() in self.field.get_players_on_ids()
+        assert self.field.field_id() == player.current_pawn_position()
+
+    def test_put_player_on_exception(self):
+        player = Player()
+        self.field.put_player_on(player)
+        with pytest.raises(PlayerError):
+            self.field.put_player_on(player)
+
+    def test_take_player_from_field(self):
+        player = Player()
+        self.other_field.put_player_on(player)
+        self.other_field.take_player_from(player)
+        assert player.player_id() not in self.other_field.get_players_on_ids()
+        assert self.other_field.field_id() != player.current_pawn_position()
+
+    def test_take_player_from_exception(self):
+        player = Player()
+        with pytest.raises(PlayerError):
+            self.field.take_player_from(player)
 
 
 class TestStreetField:

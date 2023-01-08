@@ -5,8 +5,9 @@ import pytest
 
 
 class TestField:
-    field = PropertyField(0, 'start', 'blue', 50)
-    other_field = PropertyField(20, 'train station', 'green', 50)
+    field = PropertyField(0, 'start', 'blue', 50, {"base_price": 100})
+    other_field = PropertyField(
+        20, 'train station', 'green', 50, {"base_price": 100})
 
     def test_set_rent(self):
         assert self.field.base_rent() == 50
@@ -28,7 +29,6 @@ class TestField:
         player = Player()
         self.field.put_player_on(player)
         assert player.player_id() in self.field.get_players_on_ids()
-        assert self.field.field_id() == player.current_pawn_position()
 
     def test_put_player_on_exception(self):
         player = Player()
@@ -39,9 +39,9 @@ class TestField:
     def test_take_player_from_field(self):
         player = Player()
         self.other_field.put_player_on(player)
+        assert player.player_id() in self.other_field.get_players_on_ids()
         self.other_field.take_player_from(player)
         assert player.player_id() not in self.other_field.get_players_on_ids()
-        assert self.other_field.field_id() != player.current_pawn_position()
 
     def test_take_player_from_exception(self):
         player = Player()
@@ -63,13 +63,14 @@ class TestStreetField:
         "mortgage": 30
     }
     prices = {
+        "base_price": 100,
         "house_cost": 50,
         "hotel_cost": 50
     }
 
     def test_add_house(self):
         street = Street(self.field_id, self.name, self.colour,
-                        self.rent, self.other_rents, self.prices)
+                        self.rent, self.prices, self.other_rents)
         assert street.houses_num() == 0
         street.add_house()
         assert street.houses_num() == 1
@@ -78,7 +79,7 @@ class TestStreetField:
 
     def test_add_fifth_house(self):
         street = Street(self.field_id, self.name, self.colour,
-                        self.rent, self.other_rents, self.prices)
+                        self.rent, self.prices, self.other_rents)
         street.add_house()
         street.add_house()
         street.add_house()
@@ -88,7 +89,7 @@ class TestStreetField:
 
     def test_add_hotel(self):
         street = Street(self.field_id, self.name, self.colour,
-                        self.rent, self.other_rents, self.prices)
+                        self.rent, self.prices, self.other_rents)
         street.add_house()
         street.add_house()
         street.add_house()
@@ -98,7 +99,7 @@ class TestStreetField:
 
     def test_second_hotel_error(self):
         street = Street(self.field_id, self.name, self.colour,
-                        self.rent, self.other_rents, self.prices)
+                        self.rent, self.prices, self.other_rents)
         street.add_house()
         street.add_house()
         street.add_house()
@@ -109,7 +110,7 @@ class TestStreetField:
 
     def test_too_many_houses(self):
         street = Street(self.field_id, self.name, self.colour,
-                        self.rent, self.other_rents, self.prices)
+                        self.rent, self.prices, self.other_rents)
         street.add_house()
         street.add_house()
         with pytest.raises(HotelError):
@@ -117,7 +118,7 @@ class TestStreetField:
 
     def test_update_rent(self):
         street = Street(self.field_id, self.name, self.colour,
-                        self.rent, self.other_rents, self.prices)
+                        self.rent, self.prices, self.other_rents)
         assert street.current_rent() == self.rent
         street.add_house()
         assert street.current_rent() == self.other_rents['w_one_house']
@@ -132,6 +133,6 @@ class TestStreetField:
 
     def test_house_cost_hotel_cost(self):
         street = Street(self.field_id, self.name, self.colour,
-                        self.rent, self.other_rents, self.prices)
+                        self.rent, self.prices, self.other_rents)
         assert street.house_cost() == self.prices['house_cost']
         assert street.hotel_cost() == self.prices['hotel_cost']

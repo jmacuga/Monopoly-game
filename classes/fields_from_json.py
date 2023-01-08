@@ -18,17 +18,20 @@ def property_fields_from_json(filename):
         field_id = field_elem["field_id"]
         if field_id in [field.field_id() for field in fields]:
             raise DoubleFieldIdError
+
         field_type = field_elem['type']
         colour = field_elem['colour']
         field_name = field_elem['name']
         rent = field_elem['rent']
+        prices = field_elem['prices']
+
         if field_type == "street":
             other_rents = field_elem["other_rents"]
-            prices = field_elem['prices']
             field_item = Street(field_id, field_name, colour,
-                                rent, other_rents, prices)
+                                rent, prices, other_rents)
         else:
-            field_item = PropertyField(field_id, field_name, colour, rent)
+            field_item = PropertyField(
+                field_id, field_name, colour, rent, prices)
         fields.append(field_item)
     return fields
 

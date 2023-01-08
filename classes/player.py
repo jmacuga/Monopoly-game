@@ -1,3 +1,6 @@
+from classes.game_constants import GameConstants
+
+
 class FieldIdError(Exception):
     pass
 
@@ -30,10 +33,15 @@ class Player:
         self._current_dice_roll_sum = None
         self._is_in_jail = False
         self._money = 0
-        self._current_pawn_position = 0
+        self._current_pawn_position = None
 
     def player_id(self):
         return self._player_id
+
+    def set_players_id(self, new_id):
+        if new_id < 0 or type(new_id) != int:
+            raise ValueError
+        self._player_id = new_id
 
     def current_dice_roll_sum(self):
         return self._current_dice_roll_sum
@@ -48,20 +56,18 @@ class Player:
         return self._current_pawn_position
 
     def set_dice_roll_sum(self, dice_sum):
-        if dice_sum < 0 or dice_sum > 12:
-            raise DiceSumError("dice sum must be between 0 and 12")
         self._current_dice_roll_sum = dice_sum
 
     def move_pawn(self):
-        self._current_pawn_position += self._current_dice_roll_sum
+        self._current_pawn_position = (
+            self._current_pawn_position + self._current_dice_roll_sum) % (GameConstants.MAX_FIELD_ID + 1)
 
-    def set_position(self, field_id, num_of_fields):
-        if field_id not in range(0, num_of_fields + 1):
-            raise FieldIdError
+    def set_position(self, field_id):
+        if field_id > GameConstants.MAX_FIELD_ID:
+            raise ValueError
         self._current_pawn_position = field_id
 
     def spend_money(self, amount):
-        # TODO if amount > self.money
         check_amount_of_money(amount)
         self._money -= amount
 
@@ -79,7 +85,7 @@ class Player:
     def sell_property(self, field_id):
         try:
             self._owned_property_fields.remove(field_id)
-        except(KeyError):
+        except (KeyError):
             raise FieldIdError("Field already owned by player")
 
     def put_in_jail(self, JAIL_FIELD_ID):

@@ -12,18 +12,19 @@ class Game:
         self._board = board
         self._current_player = self._players[0]
         self._winner = None
-        self.prepare_game()
-        self._current_dice_roll = (0, 0)
+        self._prepare_game()
+        self._current_dice_roll = None
 
-    def prepare_game(self):
+    def _prepare_game(self):
         for player in self._players:
             self._board.get_field_by_id(0).put_player_on(player)
+            player.set_position(0)
             player.earn_money(INITIAL_MPP)
 
     def dice_roll(self):
         dice1 = randint(1, 6)
         dice2 = randint(1, 6)
-        self.current_dice_roll = (dice1, dice2)
+        self._current_dice_roll = (dice1, dice2)
 
     def current_dice_roll(self):
         return self._current_dice_roll
@@ -31,15 +32,26 @@ class Game:
     def current_dice_sum(self):
         return sum(self._current_dice_roll)
 
-    def move_pawn_dice(self):
-        self._current_player.current_dice_roll_sum = self.current_dice_sum()
+    def move_pawn_number_of_dots(self):
+        self._current_player.set_dice_roll_sum(self.current_dice_sum())
         self._current_player.move_pawn()
+        self.current_field().put_player_on(self._current_player)
 
     def make_move(self):
         pass
 
     def current_field(self) -> Field:
-        pass
+        field_id = self._current_player.current_pawn_position()
+        field = self._board.get_field_by_id(field_id)
+        return field
 
     def change_player(self):
         pass
+
+    def player_can_afford(self, amount):
+        return self._current_player.money() > amount
+
+    def buy_property(self, property_id):
+        field = self.board.get_field_by_id(property_id)
+        self._current_player.spend_money(field.current_rent())
+        self._current_player.buy_property(property_id)

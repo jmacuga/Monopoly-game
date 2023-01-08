@@ -43,12 +43,18 @@ class Field:
 
 
 class PropertyField(Field):
-    def __init__(self, field_id: int, name: str, colour: str, base_rent: int):
+    def __init__(self,
+                 field_id: int,
+                 name: str,
+                 colour: str,
+                 base_rent: int,
+                 prices:  Dict[str, int]):
         super().__init__(field_id, name)
         self._colour = colour
         self._base_rent = base_rent
         self._owner = None
         self._current_rent = base_rent
+        self._price = prices["base_price"]
 
     def base_rent(self):
         return self._base_rent
@@ -73,12 +79,19 @@ class PropertyField(Field):
     def double_rent(self):
         self._current_rent = 2 * self._base_rent
 
+    def price(self):
+        return self._price
+
 
 class Street(PropertyField):
-    def __init__(self, field_id: int, name: str, colour: str, rent: int,
-                 other_rents: Dict[str, int],
-                 prices: Dict[str, int]):
-        super().__init__(field_id, name, colour, rent)
+    def __init__(self,
+                 field_id: int,
+                 name: str,
+                 colour: str,
+                 rent: int,
+                 prices: Dict[str, int],
+                 other_rents: Dict[str, int]):
+        super().__init__(field_id, name, colour, rent, prices)
         self._other_rents = other_rents
         self._prices = prices
         self._current_rent = self._base_rent

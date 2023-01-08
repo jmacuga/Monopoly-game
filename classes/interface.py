@@ -15,13 +15,10 @@ class MenuOption(Enum):
 
 def play(game: Game):
     game.prepare_game()
-    try:
-        while True:
-            show_menu()
-            menu_option = players_input_menu()
-            MAIN_MENU_OPTIONS[menu_option](game)
-    except(Exception):
-        return
+    while True:
+        show_menu()
+        menu_option = players_input_menu()
+        MAIN_MENU_OPTIONS[menu_option](game)
 
 
 def players_input_bool():

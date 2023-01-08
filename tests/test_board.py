@@ -18,13 +18,13 @@ class TestBoard:
         board = Board(self.property_fields, self.num_of_colour)
         assert type(board.get_field_by_id(1)) == PropertyField
         assert type(board.get_field_by_id(6)) == Street
-        assert board.get_field_by_id(6).colour() == 'blue'
+        assert board.get_field_by_id(6).colour() == 'yellow'
 
     def test_get_fields_owner(self):
         board = Board(self.property_fields, self.num_of_colour)
         player = Player()
-        board.get_field_by_id(4).set_owner(player)
-        assert board.get_fields_owner(4) == player
+        board.get_field_by_id(6).set_owner(player)
+        assert board.get_fields_owner(6) == player
 
     def test_special_fields(self):
         board = Board(self.property_fields,

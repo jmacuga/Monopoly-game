@@ -60,7 +60,8 @@ class Player:
 
     def move_pawn(self):
         self._current_pawn_position = (
-            self._current_pawn_position + self._current_dice_roll_sum) % (GameConstants.MAX_FIELD_ID + 1)
+            self._current_pawn_position + self._current_dice_roll_sum) \
+            % (GameConstants.MAX_FIELD_ID + 1)
 
     def set_position(self, field_id):
         if field_id > GameConstants.MAX_FIELD_ID:
@@ -98,3 +99,6 @@ class Player:
         if not self._is_in_jail:
             raise JailError("Player is not in jail")
         self._is_in_jail = False
+
+    def owned_property_fields(self):
+        return self._owned_property_fields

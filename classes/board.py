@@ -33,3 +33,15 @@ class Board:
 
     def get_fields_owner(self, field_id):
         return self._all_fields[field_id].owner()
+
+# TODO test
+    def get_max_number_of_same_colour(self, colour):
+        return self._number_of_fields_colour[colour]
+
+# TODO test
+    def get_all_fields_of_colour(self, colour):
+        same_colour = []
+        for f in self._property_fields:
+            if f.colour() == colour:
+                same_colour.append(f)
+        return same_colour

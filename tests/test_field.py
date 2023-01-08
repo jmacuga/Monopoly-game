@@ -1,5 +1,5 @@
 from classes.field import PropertyField, Street
-from classes.field import HousesNumError, HotelError, PlayerError
+from classes.field import PlayerError
 from classes.player import Player
 import pytest
 
@@ -22,8 +22,8 @@ class TestField:
     def test_set_owner(self):
         player = Player()
         assert self.field.owner() is None
-        self.field.set_owner(player)
-        assert self.field.owner() == player
+        self.field.set_owner(player.player_id())
+        assert self.field.owner() == player.player_id()
 
     def test_put_player_on_field(self):
         player = Player()
@@ -84,7 +84,7 @@ class TestStreetField:
         street.add_house()
         street.add_house()
         street.add_house()
-        with pytest.raises(HousesNumError):
+        with pytest.raises(ValueError):
             street.add_house()
 
     def test_add_hotel(self):
@@ -105,7 +105,7 @@ class TestStreetField:
         street.add_house()
         street.add_house()
         street.add_hotel()
-        with pytest.raises(HotelError):
+        with pytest.raises(ValueError):
             street.add_hotel()
 
     def test_too_many_houses(self):
@@ -113,7 +113,7 @@ class TestStreetField:
                         self.rent, self.prices, self.other_rents)
         street.add_house()
         street.add_house()
-        with pytest.raises(HotelError):
+        with pytest.raises(ValueError):
             street.add_hotel()
 
     def test_update_rent(self):

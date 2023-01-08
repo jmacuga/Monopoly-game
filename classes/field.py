@@ -68,8 +68,8 @@ class PropertyField(Field):
     def current_rent(self):
         return self._current_rent
 
-    def set_owner(self, new_owner: Player):
-        self._owner = new_owner
+    def set_owner(self, new_owner_id: int):
+        self._owner = new_owner_id
 
     def set_current_rent(self, new_rent):
         if new_rent < 0 or type(new_rent) is not int:
@@ -96,28 +96,24 @@ class Street(PropertyField):
         self._prices = prices
         self._current_rent = self._base_rent
         self._houses_num = 0
-        self._hotels_num = 0
+        self._hotel = False
 
     def houses_num(self):
         return self._houses_num
 
-    def hotels_num(self):
-        return self._hotels_num
+    def hotel(self):
+        return self._hotel
 
     def add_house(self):
-        if self._hotels_num == 1:
-            raise HousesNumError('There must not be more houses')
-        if self._houses_num == 4:
-            raise HousesNumError('There must not be more than four houses.')
+        if self._hotel or self._houses_num >= 4:
+            raise ValueError
         self._houses_num += 1
         self.update_rent()
 
     def add_hotel(self):
-        if self._hotels_num == 1:
-            raise HotelError("there must not be more than one hotel")
-        if self._houses_num != 4:
-            raise HotelError('There must be four houses to add a hotel')
-        self._hotels_num += 1
+        if self._hotel or self._houses_num < 4:
+            raise ValueError
+        self._hotel = True
         self._houses_num -= 4
         self.update_rent()
 

@@ -95,7 +95,7 @@ class TestStreetField:
         street.add_house()
         street.add_house()
         street.add_hotel()
-        assert street.hotels_num() == 1
+        assert street.hotel() is True
 
     def test_second_hotel_error(self):
         street = Street(self.field_id, self.name, self.colour,

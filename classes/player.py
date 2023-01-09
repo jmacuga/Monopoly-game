@@ -13,6 +13,10 @@ class JailError(Exception):
     pass
 
 
+class NotAffordableErorr(Exception):
+    pass
+
+
 def check_amount_of_money(amount):
     if type(amount) is not int:
         raise TypeError
@@ -68,8 +72,13 @@ class Player:
             raise ValueError
         self._current_pawn_position = field_id
 
+    def check_account(self, amount):
+        if self.money() < amount:
+            raise NotAffordableErorr
+
     def spend_money(self, amount):
         check_amount_of_money(amount)
+        self.check_account(amount)
         self._money -= amount
 
     def earn_money(self, amount):
@@ -102,3 +111,12 @@ class Player:
 
     def owned_property_fields(self):
         return self._owned_property_fields
+
+    def is_bancrupt(self):
+        return len(self._owned_property_fields) == 0 and self.money() == 0
+
+    def total_fortune(self):
+        fortune = self._money
+        for prop_fld in self._owned_property_fields:
+            fortune += prop_fld.total_value()
+        return fortune

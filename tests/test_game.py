@@ -1,6 +1,6 @@
 import classes.fields_from_json as ffjson
 from classes.board import Board
-from classes.field import Street, PropertyField, SpecialField
+from classes.field import PropertyField, SpecialField
 from classes.player import Player
 from classes.game import Game
 from classes.game_constants import GameConstants
@@ -76,7 +76,8 @@ class TestGame:
         assert self.game._cur_players_array_id == 0
         self.game.change_player()
         assert self.game._cur_players_array_id == 1
-        assert self.game._current_player.player_id() == self.player2.player_id()
+        assert self.game._current_player.player_id() ==\
+            self.player2.player_id()
         assert self.game._current_player == self.player2
 
 
@@ -91,34 +92,57 @@ class TestHouseBuilding:
     player2 = Player()
     game = Game(board, [player1, player2])
     test_fields_set = {5, 7}
+    street_id1 = list(test_fields_set)[0]
+    street_id2 = list(test_fields_set)[1]
+    street1 = board.get_field_by_id(street_id1)
+    street2 = board.get_field_by_id(street_id2)
 
     def test_can_build_house_first_house(self):
         self.player1._owned_property_fields = self.test_fields_set
-        assert self.game.can_build_house(list(self.test_fields_set)[0])
+        assert self.game.can_build_house(self.street_id1)
 
     def test_can_buid_house_uneven_houses(self):
         self.player1._owned_property_fields = self.test_fields_set
-        street_id = list(self.test_fields_set)[0]
-        other_street_id = list(self.test_fields_set)[1]
-        self.board.get_field_by_id(street_id).add_house()
-        assert self.game.can_build_house(street_id) is False
-        self.board.get_field_by_id(other_street_id).add_house()
-        assert self.game.can_build_house(street_id) is True
+        self.board.get_field_by_id(self.street_id1).add_house()
+        assert self.game.can_build_house(self.street_id1) is False
+        self.board.get_field_by_id(self.street_id2).add_house()
+        assert self.game.can_build_house(self.street_id1) is True
 
     def test_can_buid_house_fifth_house(self):
         self.player1._owned_property_fields = self.test_fields_set
-        street_id = list(self.test_fields_set)[0]
-        other_street_id = list(self.test_fields_set)[1]
-        street1 = self.board.get_field_by_id(street_id)
-        street2 = self.board.get_field_by_id(other_street_id)
-        assert street1.houses_num() == 1
+        assert self.street1.houses_num() == 1
         for _ in range(0, 3):
-            street1.add_house()
-            street2.add_house()
-        assert self.game.can_build_house(street_id) is False
+            self.street1.add_house()
+            self.street2.add_house()
+        assert self.game.can_build_house(self.street_id1) is False
+
+    def test_can_build_hotel_not_enough_houses(self):
+        self.street1.remove_house()
+        assert self.street1.houses_num() == 3
+        assert self.street2.houses_num() == 4
+        assert self.game.can_build_hotel(self.street_id1) is False
+
+    def test_can_build_hotel_uneven_houses(self):
+        assert self.game.can_build_hotel(self.street_id2) is False
+
+    def test_can_build_hotel(self):
+        self.street1.add_house()
+        assert self.game.can_build_hotel(self.street_id1) is True
+        assert self.game.can_build_hotel(self.street_id2) is True
+
+    def test_can_build_hotel_second_hotel(self):
+        self.street1.add_hotel()
+        assert self.game.can_build_hotel(self.street_id1) is False
 
     def test_can_build_house_not_owned_all_of_colour(self):
-        assert False
+        street_field_id = 6
+        self.player1._owned_property_fields.add(street_field_id)
+        assert self.game.can_build_house(street_field_id) is False
 
     def test_can_build_house_not_enough_money(self):
-        assert False
+        self.street1.remove_hotel()
+        self.street1.remove_house()
+        self.street2.remove_house()
+        assert self.game.can_build_house(self.street_id1)
+        self.player1._money = 10
+        assert self.game.can_build_house(self.street_id1) is False

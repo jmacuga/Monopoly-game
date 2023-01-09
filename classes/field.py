@@ -82,6 +82,9 @@ class PropertyField(Field):
     def price(self):
         return self._price
 
+    def total_value(self):
+        return self.mortgage_cost()
+
 
 class Street(PropertyField):
     def __init__(self,
@@ -127,7 +130,7 @@ class Street(PropertyField):
             new_rent = self._other_rents['w_three_houses']
         elif self._houses_num == 4:
             new_rent = self._other_rents['w_four_houses']
-        elif self._hotels_num == 1:
+        elif self._hotel:
             new_rent = self._other_rents['w_hotel']
         self._current_rent = new_rent
 
@@ -139,6 +142,23 @@ class Street(PropertyField):
 
     def mortgage_price(self):
         return self._other_rents['mortgage']
+
+    def remove_house(self):
+        if self._hotel or self.houses_num == 0:
+            return
+        self._houses_num -= 1
+        self.update_rent()
+
+    def remove_hotel(self):
+        if self._hotel:
+            return
+        self._hotel = False
+        self.update_rent()
+
+    def total_value(self):
+        value = self.mortgage_cost() + self._houses_num * self.house_cost * 0.5
+        value += self.hotel_cost() if self._hotel else 0
+        return value
 
 
 class SpecialField(Field):

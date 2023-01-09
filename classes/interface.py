@@ -14,7 +14,6 @@ class MenuOption(Enum):
 
 
 def play(game: Game):
-    game.prepare_game()
     while True:
         show_menu()
         menu_option = players_input_menu()
@@ -34,11 +33,11 @@ def players_input_menu():
 
 
 def show_menu():
-    text = '''
-    1. See all players cards and money \n
-    3. See your cards and money \n
-    2. Buy house/hotel \n'''
-    return text
+    text = '''MAIN MENU press number key to pick option:
+    1. See all players cards and money
+    3. See your cards and money
+    2. Buy house/hotel'''
+    print(text)
 
 
 def menu_action(menu_option):

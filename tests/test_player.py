@@ -1,7 +1,6 @@
 from classes.player import Player, JailError
 import pytest
 from classes.game_constants import GameConstants
-JAIL_FIELD_ID = 10
 
 
 def test_id():

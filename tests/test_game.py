@@ -21,6 +21,7 @@ class TestGame:
     player1 = Player()
     player2 = Player()
     game = Game(board, [player1, player2])
+    game.prepare_game()
 
     def test_prepare_pawns_on_start(self):
         assert self.board.get_field_by_id(0).get_players_on_ids(
@@ -73,9 +74,9 @@ class TestGame:
             _current_player._owned_property_fields
 
     def test_change_player(self):
-        assert self.game._cur_players_array_id == 0
+        assert self.game._cur_player_id_in_array == 0
         self.game.change_player()
-        assert self.game._cur_players_array_id == 1
+        assert self.game._cur_player_id_in_array == 1
         assert self.game._current_player.player_id() ==\
             self.player2.player_id()
         assert self.game._current_player == self.player2
@@ -91,6 +92,7 @@ class TestHouseBuilding:
     player1 = Player()
     player2 = Player()
     game = Game(board, [player1, player2])
+    game.prepare_game()
     test_fields_set = {5, 7}
     street_id1 = list(test_fields_set)[0]
     street_id2 = list(test_fields_set)[1]

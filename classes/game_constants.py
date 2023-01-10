@@ -6,3 +6,4 @@ class GameConstants(IntEnum):
     JAIL_FIELD_ID = 10
     INITIAL_MONEY_PP = 1500
     MAX_NUM_OF_ROUNDS = 5
+    MAX_PLAYERS_NUM = 3

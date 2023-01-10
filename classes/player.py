@@ -42,6 +42,9 @@ class Player:
     def player_id(self):
         return self._player_id
 
+    def name(self):
+        return self._name
+
     def set_players_id(self, new_id):
         if new_id < 0 or type(new_id) != int:
             raise ValueError
@@ -120,3 +123,9 @@ class Player:
         for prop_fld in self._owned_property_fields:
             fortune += prop_fld.total_value()
         return fortune
+
+    def __str__(self):
+        output_str = f'name: {self._name}'
+        output_str += f'\nmoney:\t{self._money}'
+        output_str += f'\ncurrent position:\t{self._current_pawn_position}'
+        return output_str

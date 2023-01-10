@@ -41,6 +41,9 @@ class Field:
             raise PlayerError('Player not on field')
         self._players_on.pop(player.player_id())
 
+    def __str__(self):
+        return f'{self._name}\nField id: {self._field_id}'
+
 
 class PropertyField(Field):
     def __init__(self,
@@ -84,6 +87,12 @@ class PropertyField(Field):
 
     def total_value(self):
         return self.mortgage_cost()
+
+    def __str__(self):
+        output_str = super().__str__()
+        output_str += f'\ncolour: {self._colour}'
+        output_str += f'\nrent: {self._current_rent}'
+        return output_str
 
 
 class Street(PropertyField):
@@ -159,6 +168,12 @@ class Street(PropertyField):
         value = self.mortgage_cost() + self._houses_num * self.house_cost * 0.5
         value += self.hotel_cost() if self._hotel else 0
         return value
+
+    def __str__(self):
+        output_str = super().__str__()
+        output_str += f'\nnumber of houses: {self._houses_num}'
+        output_str += f'\nhotel: {self._hotel}'
+        return output_str
 
 
 class SpecialField(Field):

@@ -1,27 +1,37 @@
 from classes.field import Field
 from random import randint
 from classes.game_constants import GameConstants
+from classes.player import Player
 
 
 class Game:
-    def __init__(self, board, players):
+    def __init__(self, board, players=None):
         self._players = players
+        if players is None:
+            self._players = []
         self._board = board
-        self._cur_players_array_id = 0
-        self._current_player = self._players[self._cur_players_array_id]
+        self._cur_player_id_in_array = 0
+        self._current_player = None
         self._winner = None
-        self._prepare_game()
         self._current_dice_roll = None
         self._total_moves = 0
 
-    def _prepare_game(self):
+    def prepare_game(self):
+        self._current_player = self._players[self._cur_player_id_in_array]
         for player in self._players:
             self._board.get_field_by_id(0).put_player_on(player)
             player.set_position(0)
             player.earn_money(int(GameConstants.INITIAL_MONEY_PP))
 
+    def add_player(self, player_name):
+
+        self._players.append(Player(player_name))
+
     def get_round_num(self):
         return self._total_moves // len(self._players)
+
+    def current_player_name(self):
+        return self._current_player.name()
 
     def dice_roll(self):
         dice1 = randint(1, 6)
@@ -55,9 +65,9 @@ class Game:
 
     def change_player(self):
         self._total_moves += 1
-        self._cur_players_array_id = (
-            self._cur_players_array_id + 1) % len(self._players)
-        self._current_player = self._players[self._cur_players_array_id]
+        self._cur_player_id_in_array = (
+            self._cur_player_id_in_array + 1) % len(self._players)
+        self._current_player = self._players[self._cur_player_id_in_array]
 
     def owns_all_of_colour(self, field):
         colour = field.colour()
@@ -122,3 +132,16 @@ class Game:
             if player.total_fortune() > max_fortune:
                 winner = player
         return winner
+
+    def players_description(self):
+        out_str = ''
+        for player in self._players:
+            out_str += '\n' + self.show_player_status(player)
+        return out_str
+
+    def show_player_status(self, player):
+        out_str = str(player)
+        for field_id in player.owned_property_fields():
+            field = self._board.get_field_by_id(field_id)
+            out_str += str(field)
+        return out_str

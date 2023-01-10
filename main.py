@@ -20,9 +20,7 @@ def main():
     # chance_cards = ffjson.chance_cards_from_json(CHANCE_CARDS)
     num_of_coulour = ffjson.number_of_colour_from_json(NUMBER_OF_COLOUR)
     board = Board(property_fields, num_of_coulour, special_fields)
-    player1 = Player("Marek")
-    player2 = Player("Adam")
-    game = Game(board, [player1, player2])
+    game = Game(board)
     interface.play(game)
 
 

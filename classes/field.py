@@ -44,6 +44,12 @@ class Field:
     def __str__(self) -> str:
         return f'{self._name}\nField id: {self._field_id}'
 
+    def description_table(self) -> List[str, str]:
+        return [['name', self._name], ['field id', self._field_id]]
+
+    def step_on_description_table(self) -> List[str, str]:
+        return [['name', self._name], ['field id', self._field_id]]
+
 
 class PropertyField(Field):
     def __init__(self,
@@ -93,6 +99,23 @@ class PropertyField(Field):
         output_str += f'\ncolour: {self._colour}'
         output_str += f'\nrent: {self._current_rent}'
         return output_str
+
+    def full_description_table(self) -> List[str, str]:
+        table = super().description_table()
+        table.append(['price', self._price])
+        return table
+
+    def description_table(self) -> List[str, str]:
+        table = super().description_table()
+        table.append(['colour', self._colour])
+        table.append(['rent', self._current_rent])
+        return table
+
+    def step_on_description_table(self) -> List[str, str]:
+        table = super().step_on_description_table()
+        table.append(['price', self._price])
+        table.append(['owner', self._owner])
+        return table
 
 
 class Street(PropertyField):
@@ -174,6 +197,26 @@ class Street(PropertyField):
         output_str += f'\nnumber of houses: {self._houses_num}'
         output_str += f'\nhotel: {self._hotel}'
         return output_str
+
+    def full_description_table(self) -> List[str, str]:
+        table = super().full_description_table()
+        table.append(['number of houses', self._houses_num])
+        table.append(['hotel', 'yes' if self._hotel else 'no'])
+        table.append(['house cost', self.house_cost()])
+        table.append(['hotel cost', self.hotel_cost()])
+        return table
+
+    def description_table(self) -> List[str, str]:
+        table = super().description_table()
+        table.append(['number of houses', self._houses_num])
+        table.append(['hotel', 'yes' if self._hotel else 'no'])
+        return table
+
+    def step_on_description_table(self) -> List[str, str]:
+        table = super().step_on_description_table()
+        table.append(['number of houses', self._houses_num])
+        table.append(['hotel', 'yes' if self._hotel else 'no'])
+        return table
 
 
 class SpecialField(Field):

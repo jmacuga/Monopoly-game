@@ -1,8 +1,9 @@
-from classes.field import Field
+from classes.field import Field, PlayerError
 from random import randint
 from classes.game_constants import GameConstants
 from classes.player import Player
 from typing import Tuple
+from tabulate import tabulate
 
 
 class Game:
@@ -148,11 +149,20 @@ class Game:
             out_str += '\n' + self.show_player_status(player)
         return out_str
 
-    def show_player_status(self, player: Player) -> str:
+    def show_player_status(self, player: Player = None) -> str:
+        if not player:
+            player = self._current_player
         out_str = str(player)
         for field_id in player.owned_property_fields():
             field = self._board.get_field_by_id(field_id)
-            out_str += str(field)
+            if player != self._current_player:
+                out_str += '\n' + \
+                    tabulate(field.description_table(),
+                             tablefmt='rounded_grid')
+            else:
+                out_str += '\n' + \
+                    tabulate(field.full_description_table(),
+                             tablefmt='rounded_grid')
         return out_str
 
     def get_player_by_id(self, player_id: int) -> str:
@@ -163,3 +173,8 @@ class Game:
     def get_current_field_owner_name(self) -> str:
         player_id = self.current_field().owner()
         return self.get_player_by_id(player_id).name()
+
+    def start_field_bonus(self) -> None:
+        if self._current_player.passed_start_field is False:
+            raise PlayerError("Player didn't pass start field")
+        self._current_player.earn_money(int(GameConstants.START_FIELD_BONUS))

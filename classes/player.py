@@ -40,6 +40,10 @@ class Player:
         self._is_in_jail = False
         self._money = 0
         self._current_pawn_position = None
+        self.passed_start_field = False
+
+    def owned_property_fields(self):
+        return self._owned_property_fields
 
     def player_id(self) -> int:
         return self._player_id
@@ -68,9 +72,14 @@ class Player:
         self._current_dice_roll_sum = dice_sum
 
     def move_pawn(self) -> None:
+        old_pos = self._current_pawn_position
         self._current_pawn_position = (
             self._current_pawn_position + self._current_dice_roll_sum) \
             % (GameConstants.MAX_FIELD_ID + 1)
+        if old_pos > self._current_pawn_position:
+            self.passed_start_field = True
+        else:
+            self.passed_start_field = False
 
     def set_position(self, field_id: int) -> None:
         if field_id > GameConstants.MAX_FIELD_ID:

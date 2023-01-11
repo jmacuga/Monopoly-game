@@ -3,6 +3,7 @@ from classes.field import PropertyField
 from enum import IntEnum
 from classes.game_constants import GameConstants
 import os
+from tabulate import tabulate
 
 
 class MenuOption(IntEnum):
@@ -46,13 +47,13 @@ def add_players(game):
     add_one_player(game, names)
     print('Enter name of second player:')
     add_one_player(game, names)
-    print('Do you want to add next player? [Y/n]')
-    answer = bool_input()
-    while answer and len(game._players) < GameConstants.MAX_PLAYERS_NUM:
-        print("Enter player's name:")
-        add_one_player(game, names)
+    answer = True
+    while len(game._players) < GameConstants.MAX_PLAYERS_NUM and answer:
         print('Do you want to add next player? [Y/n]')
         answer = bool_input()
+        if answer:
+            print("Enter player's name:")
+            add_one_player(game, names)
 
 
 def bool_input():
@@ -99,11 +100,21 @@ def make_property_transaction(game):
               f'for {game.current_field().name()}')
 
 
+def passing_start_field(game):
+    game.start_field_bonus()
+    print(f'\nYou earned {GameConstants.START_FIELD_BONUS}' +
+          ' for passsing start field')
+
+
 def make_move(game):
     game.dice_roll()
     print(f'\nYour dice roll result: {game.current_dice_roll()}')
     game.move_pawn_number_of_dots()
-    print(f'You moved to field :\t {game.current_field()}')
+    print('You moved to field :\n' +
+          tabulate(game.current_field().step_on_description_table(),
+                   tablefmt='rounded_grid'))
+    if game._current_player.passed_start_field:
+        passing_start_field(game)
     if isinstance(game.current_field(), PropertyField) and \
             game.current_field().owner() is None:
         make_property_transaction(game)
@@ -129,8 +140,8 @@ def show_all_players_status(game):
     print(game.players_description())
 
 
-def show_current_player_status():
-    pass
+def show_current_player_status(game):
+    print(game.show_player_status())
 
 
 def buy_house_hotel():
@@ -142,7 +153,7 @@ def menu_action(menu_option, game):
     if menu_option == MenuOption.SEE_ALL:
         show_all_players_status(game)
     elif menu_option == MenuOption.SEE_YOURS:
-        show_current_player_status()
+        show_current_player_status(game)
     elif menu_option == MenuOption.BUY_HOUSE_HOTEL:
         buy_house_hotel()
     elif menu_option == MenuOption.THROW_DICE:

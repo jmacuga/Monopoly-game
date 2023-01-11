@@ -101,3 +101,16 @@ def test_is_bancrupt_no_property_money():
 def test_bancrupt():
     player1 = Player()
     assert player1.is_bancrupt()
+
+
+def test_passed_start_field():
+    player1 = Player()
+    player1.set_position(GameConstants.MAX_FIELD_ID - 2)
+    player1.set_dice_roll_sum(3)
+    player1.move_pawn()
+    assert player1.passed_start_field
+    assert player1.current_pawn_position() == 0
+    player1.set_dice_roll_sum(1)
+    player1.move_pawn()
+    assert player1.current_pawn_position() == 1
+    assert player1.passed_start_field is False

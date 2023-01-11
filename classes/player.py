@@ -42,9 +42,6 @@ class Player:
         self._current_pawn_position = None
         self.passed_start_field = False
 
-    def owned_property_fields(self):
-        return self._owned_property_fields
-
     def player_id(self) -> int:
         return self._player_id
 

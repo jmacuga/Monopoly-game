@@ -1,6 +1,5 @@
 from classes.board import Board
 from classes.game import Game
-from classes.player import Player
 from classes import interface
 import classes.fields_from_json as ffjson
 CHANCE_CARDS = "database/chance_cards.json"

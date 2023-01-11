@@ -16,7 +16,6 @@ class TestGame:
         PROPERTY_FIELDS)
     num_of_colour = ffjson.number_of_colour_from_json(NUM_OF_COLOUR)
     special_fields = ffjson.special_fields_from_json(SPECIAL_FIELDS)
-    max_rounds_num = 20
     board = Board(property_fields, num_of_colour, special_fields)
     player1 = Player()
     player2 = Player()
@@ -49,10 +48,7 @@ class TestGame:
         assert self.game._current_player.current_pawn_position() == 2
         assert self.player1.player_id() in field.get_players_on_ids()
 
-    def test_current_field_get_rent(self, monkeypatch):
-        # monkeypatch.setattr(Game, 'current_dice_sum', lambda s: sum((1, 1)))
-        # self.game.dice_roll()
-        # self.game.move_pawn_number_of_dots()
+    def test_current_field_get_rent(self):
         field = self.game.current_field()
         assert self.game._current_player.current_pawn_position() == 2
         assert type(field) == PropertyField
@@ -81,13 +77,24 @@ class TestGame:
             self.player2.player_id()
         assert self.game._current_player == self.player2
 
+    def test_pay_rent(self):
+        self.game._current_player = self.player1
+        self.player1.set_position(6)
+        self.game.buy_current_property()
+        self.game._current_player = self.player2
+        self.player2.set_position(6)
+        money_before1 = self.player1.money()
+        money_before2 = self.player2.money()
+        self.game.pay_rent()
+        assert money_before1 < self.player1.money()
+        assert money_before2 > self.player2.money()
+
 
 class TestHouseBuilding:
     property_fields = ffjson.property_fields_from_json(
         PROPERTY_FIELDS)
     num_of_colour = ffjson.number_of_colour_from_json(NUM_OF_COLOUR)
     special_fields = ffjson.special_fields_from_json(SPECIAL_FIELDS)
-    max_rounds_num = 20
     board = Board(property_fields, num_of_colour, special_fields)
     player1 = Player()
     player2 = Player()
@@ -148,3 +155,45 @@ class TestHouseBuilding:
         assert self.game.can_build_house(self.street_id1)
         self.player1._money = 10
         assert self.game.can_build_house(self.street_id1) is False
+
+
+class TestGameOtherMethods:
+    property_fields = ffjson.property_fields_from_json(
+        PROPERTY_FIELDS)
+    num_of_colour = ffjson.number_of_colour_from_json(NUM_OF_COLOUR)
+    special_fields = ffjson.special_fields_from_json(SPECIAL_FIELDS)
+    board = Board(property_fields, num_of_colour, special_fields)
+    player1 = Player()
+    game = Game(board, [player1])
+    game.prepare_game()
+
+    def test_add_player(self):
+        self.game.add_player('')
+        assert len(self.game._players) == 2
+
+    def test_win(self):
+        self.game._win = True
+        assert self.game.win() is True
+
+    def test_get_round_num(self):
+        self.game._win = False
+        assert self.game.get_round_num() == 0
+        self.game.change_player()
+        assert self.game.get_round_num() == 0
+        self.game.change_player()
+        assert self.game.get_round_num() == 1
+
+    def test_current_player_name(self):
+        assert self.game.current_player_name() == ''
+        self.player1._name = 'Monika'
+        assert self.game.current_player_name() == 'Monika'
+
+    def test_is_win_max_rounds(self):
+        self.game._total_moves = GameConstants.MAX_NUM_OF_ROUNDS * \
+            len(self.game._players)
+        assert self.game.is_win()
+
+    def test_is_win_bancrupcy(self):
+        self.game._total_moves = 1
+        self.player1._money = 0
+        assert self.game.is_win()

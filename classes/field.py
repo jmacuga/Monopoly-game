@@ -21,27 +21,27 @@ class Field:
         self._name = name
         self._players_on = {}
 
-    def field_id(self):
+    def field_id(self) -> int:
         return self._field_id
 
-    def name(self):
+    def name(self) -> str:
         return self._name
 
     def get_players_on_ids(self) -> List:
         # returns list of ids of players that currently stand on field
         return list(self._players_on.keys())
 
-    def put_player_on(self, player: Player):
+    def put_player_on(self, player: Player) -> None:
         if player.player_id() in self._players_on:
             raise PlayerError('Player already on field')
         self._players_on[player.player_id()] = player
 
-    def take_player_from(self, player: Player):
+    def take_player_from(self, player: Player) -> None:
         if player.player_id() not in self._players_on:
             raise PlayerError('Player not on field')
         self._players_on.pop(player.player_id())
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'{self._name}\nField id: {self._field_id}'
 
 
@@ -59,36 +59,36 @@ class PropertyField(Field):
         self._current_rent = base_rent
         self._price = prices["base_price"]
 
-    def base_rent(self):
+    def base_rent(self) -> int:
         return self._base_rent
 
-    def colour(self):
+    def colour(self) -> str:
         return self._colour
 
-    def owner(self):
+    def owner(self) -> int:
         return self._owner
 
-    def current_rent(self):
+    def current_rent(self) -> int:
         return self._current_rent
 
-    def set_owner(self, new_owner_id: int):
+    def set_owner(self, new_owner_id: int) -> None:
         self._owner = new_owner_id
 
-    def set_current_rent(self, new_rent):
+    def set_current_rent(self, new_rent: int) -> None:
         if new_rent < 0 or type(new_rent) is not int:
             raise ValueError('Rent must be positive integer')
         self._current_rent = new_rent
 
-    def double_rent(self):
+    def double_rent(self) -> None:
         self._current_rent = 2 * self._base_rent
 
-    def price(self):
+    def price(self) -> int:
         return self._price
 
-    def total_value(self):
+    def total_value(self) -> int:
         return self.mortgage_cost()
 
-    def __str__(self):
+    def __str__(self) -> str:
         output_str = super().__str__()
         output_str += f'\ncolour: {self._colour}'
         output_str += f'\nrent: {self._current_rent}'
@@ -110,26 +110,26 @@ class Street(PropertyField):
         self._houses_num = 0
         self._hotel = False
 
-    def houses_num(self):
+    def houses_num(self) -> int:
         return self._houses_num
 
-    def hotel(self):
+    def hotel(self) -> bool:
         return self._hotel
 
-    def add_house(self):
+    def add_house(self) -> None:
         if self._hotel or self._houses_num >= 4:
             raise ValueError
         self._houses_num += 1
         self.update_rent()
 
-    def add_hotel(self):
+    def add_hotel(self) -> None:
         if self._hotel or self._houses_num < 4:
             raise ValueError
         self._hotel = True
         self._houses_num -= 4
         self.update_rent()
 
-    def update_rent(self):
+    def update_rent(self) -> None:
         new_rent = self._base_rent
         if self._houses_num == 1:
             new_rent = self._other_rents['w_one_house']
@@ -143,33 +143,33 @@ class Street(PropertyField):
             new_rent = self._other_rents['w_hotel']
         self._current_rent = new_rent
 
-    def house_cost(self):
+    def house_cost(self) -> int:
         return self._prices['house_cost']
 
-    def hotel_cost(self):
+    def hotel_cost(self) -> int:
         return self._prices['hotel_cost']
 
-    def mortgage_price(self):
+    def mortgage_price(self) -> int:
         return self._other_rents['mortgage']
 
-    def remove_house(self):
+    def remove_house(self) -> None:
         if self._hotel or self.houses_num == 0:
             return
         self._houses_num -= 1
         self.update_rent()
 
-    def remove_hotel(self):
+    def remove_hotel(self) -> None:
         if self._hotel:
             return
         self._hotel = False
         self.update_rent()
 
-    def total_value(self):
+    def total_value(self) -> int:
         value = self.mortgage_cost() + self._houses_num * self.house_cost * 0.5
         value += self.hotel_cost() if self._hotel else 0
         return value
 
-    def __str__(self):
+    def __str__(self) -> str:
         output_str = super().__str__()
         output_str += f'\nnumber of houses: {self._houses_num}'
         output_str += f'\nhotel: {self._hotel}'

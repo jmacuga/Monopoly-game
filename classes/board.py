@@ -22,24 +22,24 @@ class Board:
         self._all_fields = self._generate_all_fields_dict()
         self._number_of_fields_colour = num_of_fields_col
 
-    def _generate_all_fields_dict(self):
+    def _generate_all_fields_dict(self) -> Dict[int, Field]:
         all_fields = {}
         for field in self._property_fields + self._special_fields:
             all_fields[field.field_id()] = field
         return all_fields
 
-    def get_field_by_id(self, field_id):
+    def get_field_by_id(self, field_id: int) -> Dict[int, Field]:
         return self._all_fields[field_id]
 
-    def get_fields_owner(self, field_id):
+    def get_fields_owner(self, field_id: int) -> int:
         return self._all_fields[field_id].owner()
 
 # TODO test
-    def get_max_number_of_same_colour(self, colour):
+    def get_max_number_of_same_colour(self, colour: str) -> int:
         return self._number_of_fields_colour[colour]
 
 # TODO test
-    def get_all_fields_of_colour(self, colour):
+    def get_all_fields_of_colour(self, colour: str) -> List[Field]:
         same_colour = []
         for f in self._property_fields:
             if f.colour() == colour:

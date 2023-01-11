@@ -1,4 +1,6 @@
 from classes.game_constants import GameConstants
+from tabulate import tabulate
+from typing import Set
 
 
 class FieldIdError(Exception):
@@ -39,93 +41,93 @@ class Player:
         self._money = 0
         self._current_pawn_position = None
 
-    def player_id(self):
+    def player_id(self) -> int:
         return self._player_id
 
-    def name(self):
+    def name(self) -> str:
         return self._name
 
-    def set_players_id(self, new_id):
+    def set_players_id(self, new_id: int) -> None:
         if new_id < 0 or type(new_id) != int:
             raise ValueError
         self._player_id = new_id
 
-    def current_dice_roll_sum(self):
+    def current_dice_roll_sum(self) -> int:
         return self._current_dice_roll_sum
 
-    def is_in_jail(self):
+    def is_in_jail(self) -> bool:
         return self._is_in_jail
 
-    def money(self):
+    def money(self) -> int:
         return self._money
 
-    def current_pawn_position(self):
+    def current_pawn_position(self) -> int:
         return self._current_pawn_position
 
-    def set_dice_roll_sum(self, dice_sum):
+    def set_dice_roll_sum(self, dice_sum: int) -> None:
         self._current_dice_roll_sum = dice_sum
 
-    def move_pawn(self):
+    def move_pawn(self) -> None:
         self._current_pawn_position = (
             self._current_pawn_position + self._current_dice_roll_sum) \
             % (GameConstants.MAX_FIELD_ID + 1)
 
-    def set_position(self, field_id):
+    def set_position(self, field_id: int) -> None:
         if field_id > GameConstants.MAX_FIELD_ID:
             raise ValueError
         self._current_pawn_position = field_id
 
-    def check_account(self, amount):
+    def check_account(self, amount: int) -> None:
         if self.money() < amount:
             raise NotAffordableErorr
 
-    def spend_money(self, amount):
+    def spend_money(self, amount: int) -> None:
         check_amount_of_money(amount)
         self.check_account(amount)
         self._money -= amount
 
-    def earn_money(self, amount):
+    def earn_money(self, amount: int) -> None:
         check_amount_of_money(amount)
         self._money += amount
 
-    def buy_property(self, field_id: int):
+    def add_property(self, field_id: int) -> None:
         if type(field_id) is not int:
             raise TypeError
         if field_id in self._owned_property_fields:
             raise FieldIdError
         self._owned_property_fields.add(field_id)
 
-    def sell_property(self, field_id):
+    def remove_property(self, field_id: int) -> None:
         try:
             self._owned_property_fields.remove(field_id)
         except (KeyError):
             raise FieldIdError("Field already owned by player")
 
-    def put_in_jail(self, JAIL_FIELD_ID):
+    def put_in_jail(self) -> None:
         if self._is_in_jail:
             raise JailError("Player is already in jail")
         self._is_in_jail = True
-        self._current_pawn_position = JAIL_FIELD_ID
+        self._current_pawn_position = GameConstants.JAIL_FIELD_ID
 
-    def get_out_of_jail(self):
+    def get_out_of_jail(self) -> None:
         if not self._is_in_jail:
             raise JailError("Player is not in jail")
         self._is_in_jail = False
 
-    def owned_property_fields(self):
+    def owned_property_fields(self) -> Set[int]:
         return self._owned_property_fields
 
-    def is_bancrupt(self):
+    def is_bancrupt(self) -> bool:
         return len(self._owned_property_fields) == 0 and self.money() == 0
 
-    def total_fortune(self):
+    def total_fortune(self) -> int:
         fortune = self._money
         for prop_fld in self._owned_property_fields:
             fortune += prop_fld.total_value()
         return fortune
 
-    def __str__(self):
-        output_str = f'name: {self._name}'
-        output_str += f'\nmoney:\t{self._money}'
-        output_str += f'\ncurrent position:\t{self._current_pawn_position}'
-        return output_str
+    def __str__(self) -> str:
+        output = [['name', self._name],
+                  ['money', self._money],
+                  ['current position', self._current_pawn_position]]
+        return tabulate(output, tablefmt='grid')

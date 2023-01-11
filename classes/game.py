@@ -2,6 +2,7 @@ from classes.field import Field
 from random import randint
 from classes.game_constants import GameConstants
 from classes.player import Player
+from typing import Tuple
 
 
 class Game:
@@ -15,36 +16,43 @@ class Game:
         self._winner = None
         self._current_dice_roll = None
         self._total_moves = 0
+        self._win = False
 
-    def prepare_game(self):
+    def player_is_owner(self) -> bool:
+        return self.current_field().owner() == self._current_player
+
+    def prepare_game(self) -> None:
         self._current_player = self._players[self._cur_player_id_in_array]
         for player in self._players:
             self._board.get_field_by_id(0).put_player_on(player)
             player.set_position(0)
             player.earn_money(int(GameConstants.INITIAL_MONEY_PP))
 
-    def add_player(self, player_name):
+    def win(self) -> bool:
+        return self._win
 
+    def add_player(self, player_name: str) -> None:
         self._players.append(Player(player_name))
 
-    def get_round_num(self):
+    def get_round_num(self) -> int:
         return self._total_moves // len(self._players)
 
-    def current_player_name(self):
+    def current_player_name(self) -> str:
         return self._current_player.name()
 
-    def dice_roll(self):
+    def dice_roll(self) -> None:
         dice1 = randint(1, 6)
         dice2 = randint(1, 6)
         self._current_dice_roll = (dice1, dice2)
 
-    def current_dice_roll(self):
+    def current_dice_roll(self) -> Tuple[int, int]:
         return self._current_dice_roll
 
-    def current_dice_sum(self):
+    def current_dice_sum(self) -> int:
         return sum(self._current_dice_roll)
 
-    def move_pawn_number_of_dots(self):
+    def move_pawn_number_of_dots(self) -> None:
+        self.current_field().take_player_from(self._current_player)
         self._current_player.set_dice_roll_sum(self.current_dice_sum())
         self._current_player.move_pawn()
         self.current_field().put_player_on(self._current_player)
@@ -54,22 +62,22 @@ class Game:
         field = self._board.get_field_by_id(field_id)
         return field
 
-    def player_can_afford(self, amount):
+    def player_can_afford(self, amount: int) -> bool:
         return self._current_player.money() > amount
 
-    def buy_current_property(self):
+    def buy_current_property(self) -> None:
         field = self.current_field()
         self._current_player.spend_money(field.price())
-        self._current_player.buy_property(field.field_id())
+        self._current_player.add_property(field.field_id())
         field.set_owner(self._current_player.player_id())
 
-    def change_player(self):
+    def change_player(self) -> None:
         self._total_moves += 1
         self._cur_player_id_in_array = (
             self._cur_player_id_in_array + 1) % len(self._players)
         self._current_player = self._players[self._cur_player_id_in_array]
 
-    def owns_all_of_colour(self, field):
+    def owns_all_of_colour(self, field: Field) -> bool:
         colour = field.colour()
         owned_in_colour_num = 0
         for f in self._current_player.owned_property_fields():
@@ -79,7 +87,7 @@ class Game:
             self._board.get_max_number_of_same_colour(
                 colour)
 
-    def can_build_house(self, field_id):
+    def can_build_house(self, field_id: int) -> bool:
         if field_id not in self._current_player.owned_property_fields():
             return False
         field = self._board.get_field_by_id(field_id)
@@ -90,7 +98,7 @@ class Game:
             self.owns_all_of_colour(
                 field) and self._current_player.money() >= field.house_cost()
 
-    def can_build_hotel(self, field_id):
+    def can_build_hotel(self, field_id: int) -> bool:
         if field_id not in self._current_player.owned_property_fields():
             return False
         field = self._board.get_field_by_id(field_id)
@@ -100,32 +108,33 @@ class Game:
         return False if field.hotel() else self.owns_all_of_colour(field) and \
             self._current_player.money() >= field.hotel_cost()
 
-    def build_house(self, field_id):
+    def build_house(self, field_id: int) -> None:
         field = self._board.get_field_by_id(field_id)
         self._current_player.spend_money(field.house_cost())
         field.add_house()
 
-    def build_hotel(self, field_id):
+    def build_hotel(self, field_id: int) -> None:
         field = self._board.get_field_by_id(field_id)
         self._current_player.spend_money(field.hotel_cost())
         field.add_hotel()
 
-    def pay_rent(self):
+    def pay_rent(self) -> None:
         if self.current_field() in self._current_player._owned_property_fields:
-            return
+            raise ValueError('Player cannot pay rent to himself')
         rent = self.current_field().current_rent()
         self._current_player.spend_money(rent)
         # NOtAffordableError -> mortgage, selling properties
-        self.current_field().owner().earn_money(rent)
+        owner = self.get_player_by_id(self.current_field().owner())
+        owner.earn_money(rent)
 
-    def is_win(self):
-        if self.round_num == GameConstants.MAX_NUM_OF_ROUNDS:
+    def is_win(self) -> bool:
+        if self.get_round_num() == GameConstants.MAX_NUM_OF_ROUNDS:
             return True
         for player in self._players:
             if player.is_bancrupt():
                 return True
 
-    def find_winner(self):
+    def find_winner(self) -> Player:
         winner = None
         max_fortune = 0
         for player in self._players:
@@ -133,15 +142,24 @@ class Game:
                 winner = player
         return winner
 
-    def players_description(self):
+    def players_description(self) -> str:
         out_str = ''
         for player in self._players:
             out_str += '\n' + self.show_player_status(player)
         return out_str
 
-    def show_player_status(self, player):
+    def show_player_status(self, player: Player) -> str:
         out_str = str(player)
         for field_id in player.owned_property_fields():
             field = self._board.get_field_by_id(field_id)
             out_str += str(field)
         return out_str
+
+    def get_player_by_id(self, player_id: int) -> str:
+        for player in self._players:
+            if player.player_id() == player_id:
+                return player
+
+    def get_current_field_owner_name(self) -> str:
+        player_id = self.current_field().owner()
+        return self.get_player_by_id(player_id).name()

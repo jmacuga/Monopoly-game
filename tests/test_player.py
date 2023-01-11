@@ -46,21 +46,21 @@ def test_set_position_above_max_field_id():
 
 def test_put_in_jail():
     player1 = Player()
-    player1.put_in_jail(GameConstants.MAX_FIELD_ID)
+    player1.put_in_jail()
     assert player1.is_in_jail()
-    assert player1.current_pawn_position() == GameConstants.MAX_FIELD_ID
+    assert player1.current_pawn_position() == GameConstants.JAIL_FIELD_ID
 
 
 def test_jail_error_in_jail():
     player1 = Player()
-    player1.put_in_jail(GameConstants.JAIL_FIELD_ID)
+    player1.put_in_jail()
     with pytest.raises(JailError):
-        player1.put_in_jail(GameConstants.JAIL_FIELD_ID)
+        player1.put_in_jail()
 
 
 def test_get_out_of_jail():
     player1 = Player()
-    player1.put_in_jail(GameConstants.JAIL_FIELD_ID)
+    player1.put_in_jail()
     player1.get_out_of_jail()
     assert not player1.is_in_jail()
 
@@ -71,15 +71,33 @@ def test_jail_error_not_in_jail():
         player1.get_out_of_jail()
 
 
-def test_buy_property():
+def test_add_property():
     player1 = Player()
-    player1.buy_property(1)
+    player1.add_property(1)
     assert player1._owned_property_fields == {1}
 
 
 def test_sell_property():
     player1 = Player()
-    player1.buy_property(1)
-    player1.buy_property(2)
-    player1.sell_property(1)
+    player1.add_property(1)
+    player1.add_property(2)
+    player1.remove_property(1)
     assert player1._owned_property_fields == {2}
+
+
+def test_is_bancrupt_no_money_property():
+    player1 = Player()
+    player1.add_property(1)
+    player1._money = 0
+    assert player1.is_bancrupt() is False
+
+
+def test_is_bancrupt_no_property_money():
+    player1 = Player()
+    player1._money = 500
+    assert player1.is_bancrupt() is False
+
+
+def test_bancrupt():
+    player1 = Player()
+    assert player1.is_bancrupt()

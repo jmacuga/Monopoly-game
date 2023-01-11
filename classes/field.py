@@ -71,14 +71,14 @@ class PropertyField(Field):
     def colour(self) -> str:
         return self._colour
 
-    def owner(self) -> int:
+    def owner(self) -> Player:
         return self._owner
 
     def current_rent(self) -> int:
         return self._current_rent
 
-    def set_owner(self, new_owner_id: int) -> None:
-        self._owner = new_owner_id
+    def set_owner(self, new_owner: Player) -> None:
+        self._owner = new_owner
 
     def set_current_rent(self, new_rent: int) -> None:
         if new_rent < 0 or type(new_rent) is not int:
@@ -112,9 +112,13 @@ class PropertyField(Field):
         return table
 
     def step_on_description_table(self) -> List[str, str]:
+        owner_name = '-'
+        if self._owner is not None:
+            owner_name = self._owner.name()
         table = super().step_on_description_table()
         table.append(['price', self._price])
-        table.append(['owner', self._owner])
+        table.append(
+            ['owner', owner_name])
         return table
 
 

@@ -70,7 +70,7 @@ class Game:
         field = self.current_field()
         self._current_player.spend_money(field.price())
         self._current_player.add_property(field.field_id())
-        field.set_owner(self._current_player.player_id())
+        field.set_owner(self._current_player)
 
     def change_player(self) -> None:
         self._total_moves += 1
@@ -171,8 +171,7 @@ class Game:
                 return player
 
     def get_current_field_owner_name(self) -> str:
-        player_id = self.current_field().owner()
-        return self.get_player_by_id(player_id).name()
+        return self.current_field().owner().name()
 
     def start_field_bonus(self) -> None:
         if self._current_player.passed_start_field is False:

@@ -73,8 +73,10 @@ class Game:
             self._cur_player_id_in_array + 1) % len(self._players)
         self._current_player = self._players[self._cur_player_id_in_array]
 
-    def owns_all_of_colour(self, field_id: int) -> bool:
-        field = self._board.get_field_by_id(field_id)
+    def get_field_by_id(self, field_id: int) -> Field:
+        return self._board.get_field_by_id(field_id)
+
+    def owns_all_of_colour(self, field: Field) -> bool:
         colour = field.colour()
         owned_in_colour_num = 0
         for f in self._current_player.owned_property_fields():
@@ -85,48 +87,30 @@ class Game:
                 colour)
 
     def is_street_owner_by_id(self, field_id: int) -> bool:
-        if type(self._board.get_field_by_id(field_id)) != Street:
+        if type(self.get_field_by_id(field_id)) != Street:
             return False
         return field_id in self._current_player.owned_property_fields()
 
-    def is_street_by_id(self, field_id: int) -> bool:
-        return type(self._board.get_field_by_id(field_id)) == Street
-
-    def houses_build_evenly(self, field_id: Field) -> bool:
-        field = self._board.get_field_by_id(field_id)
+    def houses_build_evenly(self, field: Field) -> bool:
         for f in self._board.get_all_fields_of_colour(field.colour()):
             if field.houses_num() > f.houses_num() and not f.hotel():
                 return False
         return True
 
-    def hotels_build_evenly(self, field_id: int) -> bool:
-        field = self._board.get_field_by_id(field_id)
+    def hotels_build_evenly(self, field: Field) -> bool:
         for f in self._board.get_all_fields_of_colour(field.colour()):
             if f.houses_num() < 4:
                 return False
         return True
 
-    def can_build_hotel(self, field_id):
-        return self._board.get_field_by_id(field_id).houses_num() == 4
+    def is_enough_houses(self, field: Field) -> bool:
+        return field.houses_num() == 4
 
-    def can_afford_house(self, field_id):
-        return self.can_afford(self._board.get_field_by_id(field_id
-                                                           ).house_cost())
-
-    def can_afford_hotel(self, field_id):
-        return self.can_afford(self._board.get_field_by_id(field_id
-                                                           ).hotel_cost())
-
-    def is_hotel(self, field_id):
-        return self._board.get_field_by_id(field_id).hotel()
-
-    def build_house(self, field_id: int) -> None:
-        field = self._board.get_field_by_id(field_id)
+    def build_house(self, field: int) -> None:
         self._current_player.spend_money(field.house_cost())
         field.add_house()
 
-    def build_hotel(self, field_id: int) -> None:
-        field = self._board.get_field_by_id(field_id)
+    def build_hotel(self, field: int) -> None:
         self._current_player.spend_money(field.hotel_cost())
         field.add_hotel()
 

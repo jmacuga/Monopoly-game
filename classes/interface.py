@@ -193,36 +193,36 @@ def field_input(game):
     return f_id
 
 
-def check_hotel_building_conditions(game, field_id):
-    if not game.can_build_hotel(field_id):
+def check_hotel_building_conditions(game, field):
+    if not game.can_build_hotel(field):
         print('There must be 4 houses on field to build hotel.')
         return False
-    if not game.hotels_build_evenly(field_id):
+    if not game.hotels_build_evenly(field):
         print('You must build 4 houses on every field of colour' +
               ' to start building hotels. Choose another field')
         return False
-    if not game.can_afford_hotel(field_id):
+    if not game.can_afford(field.hotel_cost()):
         print('You cannot afford this hotel')
         return False
-    if game.is_hotel(field_id):
+    if field.hotel():
         print('There already is a hotel on this field.')
         return False
     return True
 
 
-def check_house_building_conditions(game, field_id):
-    if not game.houses_build_evenly(field_id):
+def check_house_building_conditions(game, field):
+    if not game.houses_build_evenly(field):
         print('You must build houses evenly on every field in the same' +
-              'colour. Choose another field')
+              'colour.')
         return False
-    if not game.can_afford_house(field_id):
+    if not game.can_afford(field.house_cost()):
         print('You cannot afford this house')
         return False
-    if not game.owns_all_of_colour(field_id):
+    if not game.owns_all_of_colour(field):
         print('You must own all fields in that colour to build a house')
         return False
-    if not game.is_hotel(field_id):
-        print('You cannot add any more houses or hotel to this field.')
+    if field.hotel():
+        print('You cannot add any more houses or hotels to this field.')
         return False
     return True
 
@@ -236,11 +236,14 @@ def buy_house_hotel(game):
     field_id = field_input(game)
     if field_id == 0:
         return
-    if game.can_build_hotel(field_id) and check_hotel_building_conditions(
-            game, field_id):
-        game.build_hotel(field_id)
-    elif check_house_building_conditions(game, field_id):
-        game.build_house(field_id)
+    field = game.get_field_by_id(field_id)
+    if game.is_enough_houses(field) and check_hotel_building_conditions(
+            game, field):
+        game.build_hotel(field)
+        print(f'You paid {field.hotel_cost()} for a hotel on {field.name()} ')
+    elif check_house_building_conditions(game, field):
+        game.build_house(field)
+        print(f'You paid {field.house_cost()} for a hotel on {field.name()} ')
 
 
 def menu_action(menu_option, game):

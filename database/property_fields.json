@@ -1,108 +1,110 @@
 [
     {
         "type": "property",
-        "colour": "grey",
+        "colour": "Grey",
         "field_id": 1,
-        "name": "station_one",
-        "rent": 50,
+        "name": "Short Line R.R.",
+        "rent": 25,
         "prices": {
-            "base_price": 100
+            "base_price": 200
         },
         "other_rents": {
-            "mortgage": 30
+            "mortgage": 100,
+            "owned_2": 50
         }
     },
     {
         "type": "property",
-        "colour": "black",
+        "colour": "Grey",
         "field_id": 2,
-        "name": "airport_chopin",
-        "rent": 50,
+        "name": "Reading Railroad",
+        "rent": 25,
         "prices": {
-            "base_price": 100
+            "base_price": 200
         },
         "other_rents": {
-            "mortgage": 30
+            "mortgage": 100,
+            "owned_2": 50
         }
     },
     {
         "type": "street",
-        "colour": "blue",
+        "colour": "deep blue",
         "field_id": 5,
-        "name": "mediterean avenue",
-        "rent": 2,
+        "name": "Park Place",
+        "rent": 35,
         "other_rents": {
-            "w_one_house": 30,
-            "w_two_houses": 90,
-            "w_three_houses": 180,
-            "w_four_houses": 320,
-            "w_hotel": 550,
-            "mortgage": 30
+            "w_one_house": 175,
+            "w_two_houses": 500,
+            "w_three_houses": 1100,
+            "w_four_houses": 1300,
+            "w_hotel": 1500,
+            "mortgage": 175
         },
         "prices": {
-            "base_price": 100,
-            "house_cost": 50,
-            "hotel_cost": 50
+            "base_price": 350,
+            "house_cost": 200,
+            "hotel_cost": 200
         }
     },
     {
         "type": "street",
-        "colour": "blue",
+        "colour": "deep blue",
         "field_id": 7,
-        "name": "golden av",
-        "rent": 2,
+        "name": "Boardwalk",
+        "rent": 50,
         "other_rents": {
-            "w_one_house": 30,
-            "w_two_houses": 90,
-            "w_three_houses": 180,
-            "w_four_houses": 320,
-            "w_hotel": 550,
-            "mortgage": 30
+            "w_one_house": 200,
+            "w_two_houses": 600,
+            "w_three_houses": 1400,
+            "w_four_houses": 1700,
+            "w_hotel": 2000,
+            "mortgage": 200
         },
         "prices": {
-            "base_price": 100,
-            "house_cost": 50,
-            "hotel_cost": 50
+            "base_price": 400,
+            "house_cost": 200,
+            "hotel_cost": 200
         }
     },
     {
         "type": "street",
         "colour": "yellow",
         "field_id": 6,
-        "name": "london str",
-        "rent": 2,
+        "name": "Marvin Gardens",
+        "rent": 24,
         "other_rents": {
-            "w_one_house": 30,
-            "w_two_houses": 90,
-            "w_three_houses": 180,
-            "w_four_houses": 320,
-            "w_hotel": 550,
-            "mortgage": 30
+            "w_one_house": 120,
+            "w_two_houses": 360,
+            "w_three_houses": 850,
+            "w_four_houses": 1025,
+            "w_hotel": 1200,
+            "mortgage": 140
         },
         "prices": {
-            "base_price": 100,
-            "house_cost": 50,
-            "hotel_cost": 50
+            "base_price": 280,
+            "house_cost": 150,
+            "hotel_cost": 150
         }
     },
     {
         "type": "street",
         "colour": "yellow",
         "field_id": 8,
-        "name": "may av",
-        "rent": 2,
+        "name": "Ventor Avenue",
+        "rent": 22,
         "other_rents": {
-            "w_one_house": 30,
-            "w_two_houses": 90,
-            "w_three_houses": 180,
-            "w_four_houses": 320,
-            "w_hotel": 550,
-            "mortgage": 30
+            "w_one_house": 110,
+            "w_two_houses": 330,
+            "w_three_houses": 800,
+            "w_four_houses": 975,
+            "w_hotel": 1150,
+            "mortgage": 130
         },
         "prices": {
-            "base_price": 100,
-            "house_cost": 50,
-            "hotel_cost": 50
+            "base_price": 260,
+            "house_cost": 150,
+            "hotel_cost": 150
         }
     }
 ]

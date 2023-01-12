@@ -114,7 +114,7 @@ def make_property_transaction(game):
     if not game.can_afford(game.current_field().price()):
         print('\nUnfortunately you cannot afford this property')
         return
-    print('\nDo you want to buy this property?[Y/n')
+    print('\nDo you want to buy this property?[Y/n]')
     answer = bool_input()
     if answer:
         game.buy_current_property()

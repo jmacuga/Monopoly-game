@@ -106,13 +106,30 @@ class Game:
     def is_enough_houses(self, field: Field) -> bool:
         return field.houses_num() == 4
 
-    def build_house(self, field: int) -> None:
+    def build_house(self, field: Field) -> None:
         self._current_player.spend_money(field.house_cost())
         field.add_house()
 
-    def build_hotel(self, field: int) -> None:
+    def build_hotel(self, field: Field) -> None:
         self._current_player.spend_money(field.hotel_cost())
         field.add_hotel()
+
+    def houses_removed_evenly(self, field):
+        for f in self._board.get_all_fields_of_colour(field.colour()):
+            if f.houses_num() > field.houses_num():
+                return False
+        return True
+
+    def is_house_to_sell(self, field):
+        return type(field) == Street or field.houses() > 0
+
+    def sell_hotel(self, field: Field) -> None:
+        self._current_player.earn_money(field.hotel_cost())
+        field.remove_hotel()
+
+    def sell_house(self, field: Field):
+        self._current_player.earn_money(field.house_cost())
+        field.remove_house()
 
     def pay_rent(self) -> None:
         if self.current_field() in self._current_player._owned_property_fields:

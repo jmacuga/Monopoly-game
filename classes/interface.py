@@ -10,7 +10,9 @@ class MenuOption(IntEnum):
     SEE_ALL = 1
     SEE_YOURS = 2
     BUY_HOUSE_HOTEL = 3
-    THROW_DICE = 4
+    SELL_HOUSE_HOTEL = 4
+    MORTGAGE = 5
+    THROW_DICE = 6
 
 
 def clear():
@@ -193,7 +195,7 @@ def field_input(game):
     return f_id
 
 
-def check_hotel_building_conditions(game, field):
+def hotel_building_conditions(game, field):
     if not game.can_build_hotel(field):
         print('There must be 4 houses on field to build hotel.')
         return False
@@ -210,7 +212,7 @@ def check_hotel_building_conditions(game, field):
     return True
 
 
-def check_house_building_conditions(game, field):
+def house_building_conditions(game, field):
     if not game.houses_build_evenly(field):
         print('You must build houses evenly on every field in the same' +
               'colour.')
@@ -237,13 +239,43 @@ def buy_house_hotel(game):
     if field_id == 0:
         return
     field = game.get_field_by_id(field_id)
-    if game.is_enough_houses(field) and check_hotel_building_conditions(
+    if game.is_enough_houses(field) and hotel_building_conditions(
             game, field):
         game.build_hotel(field)
         print(f'You paid {field.hotel_cost()} for a hotel on {field.name()} ')
-    elif check_house_building_conditions(game, field):
+    elif house_building_conditions(game, field):
         game.build_house(field)
-        print(f'You paid {field.house_cost()} for a hotel on {field.name()} ')
+        print(f'You paid {field.house_cost()} for a house on {field.name()} ')
+
+
+def house_selling_conditions(game, field):
+    if not game.is_house_to_sell(field):
+        print("There is no house to sell  from that field")
+        return False
+    if not game.houses_removed_evenly(field):
+        print("You must sell houses evenly from all fields in that colour.")
+        return False
+    return True
+
+
+def sell_house_hotel(game):
+    print('\nYour cards:')
+    show_current_player_status(game, streets_only=True)
+    print(
+        'On which field fo you want to sell house/hotel? Type field id to choose.'
+        ' [Type 0 to cancel]')
+    field_id = field_input(game)
+    if field_id == 0:
+        return
+    field = game.get_field_by_id(field_id)
+    if field.hotel():
+        game.sell_hotel(field)
+        print(f'You earned {field.hotel_cost()}' +
+              f' for selling hotel from {field.name()}')
+    elif house_selling_conditions(game, field):
+        game.sell_house(field)
+        print(f'You earned {field.house_cost()}' +
+              f' for selling house from {field.name()}')
 
 
 def menu_action(menu_option, game):
@@ -253,6 +285,11 @@ def menu_action(menu_option, game):
         show_current_player_status(game)
     elif menu_option == MenuOption.BUY_HOUSE_HOTEL:
         buy_house_hotel(game)
+    elif menu_option == MenuOption.SELL_HOUSE_HOTEL:
+        sell_house_hotel(game)
+    elif menu_option == MenuOption.MORTGAGE:
+        # meortgage(game)
+        pass
     elif menu_option == MenuOption.THROW_DICE:
         make_move(game)
 
@@ -274,6 +311,8 @@ def show_menu():
     1. See all players cards and money
     2. See your cards and money
     3. Buy house/hotel
-    4. Throw dice to make your move
+    4. Sell house/ hotel
+    5. Mortgage property
+    6. Throw dice to make your move
     '''
     print(text)

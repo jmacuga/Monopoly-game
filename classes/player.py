@@ -126,12 +126,6 @@ class Player:
     def is_bancrupt(self) -> bool:
         return len(self._owned_property_fields) == 0 and self.money() == 0
 
-    def total_fortune(self) -> int:
-        fortune = self._money
-        for prop_fld in self._owned_property_fields:
-            fortune += prop_fld.total_value()
-        return fortune
-
     def __str__(self) -> str:
         output = [['name', self._name],
                   ['money', self._money],

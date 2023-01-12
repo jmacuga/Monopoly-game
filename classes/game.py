@@ -1,4 +1,4 @@
-from classes.field import Field, PlayerError
+from classes.field import Field, PlayerError, Street
 from random import randint
 from classes.game_constants import GameConstants
 from classes.player import Player
@@ -58,7 +58,7 @@ class Game:
         field = self._board.get_field_by_id(field_id)
         return field
 
-    def player_can_afford(self, amount: int) -> bool:
+    def can_afford(self, amount: int) -> bool:
         return self._current_player.money() > amount
 
     def buy_current_property(self) -> None:
@@ -73,7 +73,8 @@ class Game:
             self._cur_player_id_in_array + 1) % len(self._players)
         self._current_player = self._players[self._cur_player_id_in_array]
 
-    def owns_all_of_colour(self, field: Field) -> bool:
+    def owns_all_of_colour(self, field_id: int) -> bool:
+        field = self._board.get_field_by_id(field_id)
         colour = field.colour()
         owned_in_colour_num = 0
         for f in self._current_player.owned_property_fields():
@@ -83,26 +84,60 @@ class Game:
             self._board.get_max_number_of_same_colour(
                 colour)
 
-    def can_build_house(self, field_id: int) -> bool:
-        if field_id not in self._current_player.owned_property_fields():
+    def is_street_owner_by_id(self, field_id: int) -> bool:
+        if type(self._board.get_field_by_id(field_id)) != Street:
             return False
+        return field_id in self._current_player.owned_property_fields()
+
+    def is_street_by_id(self, field_id: int) -> bool:
+        return type(self._board.get_field_by_id(field_id)) == Street
+
+    def houses_build_evenly(self, field_id: Field) -> bool:
         field = self._board.get_field_by_id(field_id)
         for f in self._board.get_all_fields_of_colour(field.colour()):
             if field.houses_num() > f.houses_num() and not f.hotel():
                 return False
-        return False if field.houses_num() == 4 else \
-            self.owns_all_of_colour(
-                field) and self._current_player.money() >= field.house_cost()
+        return True
 
-    def can_build_hotel(self, field_id: int) -> bool:
-        if field_id not in self._current_player.owned_property_fields():
-            return False
+    def hotels_build_evenly(self, field_id: int) -> bool:
         field = self._board.get_field_by_id(field_id)
         for f in self._board.get_all_fields_of_colour(field.colour()):
             if f.houses_num() < 4:
                 return False
-        return False if field.hotel() else self.owns_all_of_colour(field) and \
-            self._current_player.money() >= field.hotel_cost()
+        return True
+
+    def can_build_hotel(self, field_id):
+        return self._board.get_field_by_id(field_id).houses_num() == 4
+
+    def can_afford_house(self, field_id):
+        return self.can_afford(self._board.get_field_by_id(field_id).house_cost())
+
+    def can_afford_hotel(self, field_id):
+        return self.can_afford(self._board.get_field_by_id(field_id).hotel_cost())
+
+    def is_hotel(self, field_id):
+        return self._board.get_field_by_id(field_id).hotel()
+
+    # def can_build_house(self, field_id: int) -> bool:
+    #     # if field_id not in self._current_player.owned_property_fields():
+    #     #     return False
+    #     field = self._board.get_field_by_id(field_id)
+    #     for f in self._board.get_all_fields_of_colour(field.colour()):
+    #         if field.houses_num() > f.houses_num() and not f.hotel():
+    #             return False
+    #     return False if field.houses_num() == 4 else \
+    #         self.owns_all_of_colour(
+    #             field) and self.player_can_afford(field.house_cost())
+
+    # def can_build_hotel(self, field_id: int) -> bool:
+    #     # if field_id not in self._current_player.owned_property_fields():
+    #     #     return False
+    #     field = self._board.get_field_by_id(field_id)
+    #     for f in self._board.get_all_fields_of_colour(field.colour()):
+    #         if f.houses_num() < 4:
+    #             return False
+    #     return False if field.hotel() else self.owns_all_of_colour(field) and \
+    #         self.player_can_afford(field.hotel_cost())
 
     def build_house(self, field_id: int) -> None:
         field = self._board.get_field_by_id(field_id)
@@ -142,15 +177,17 @@ class Game:
     def players_description(self) -> str:
         out_str = ''
         for player in self._players:
-            out_str += '\n' + self.show_player_status(player)
+            out_str += '\n' + self.show_player_status(player=player)
         return out_str
 
-    def show_player_status(self, player: Player = None) -> str:
+    def show_player_status(self, streets_only: bool = False, player: Player = None, ) -> str:
         if not player:
             player = self._current_player
         out_str = str(player)
         for field_id in player.owned_property_fields():
             field = self._board.get_field_by_id(field_id)
+            if streets_only and type(field) != Street:
+                continue
             if player != self._current_player:
                 out_str += '\n' + tabulate(field.description_table(),
                                            tablefmt='rounded_grid')

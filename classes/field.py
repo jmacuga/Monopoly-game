@@ -195,7 +195,8 @@ class Street(PropertyField):
         self.update_rent()
 
     def total_value(self) -> int:
-        value = self.mortgage_price() + self._houses_num * self.house_cost() * 0.5
+        value = self.mortgage_price() + self._houses_num * \
+            self.house_cost() * 0.5
         value += self.hotel_cost() if self._hotel else 0
         return value
 

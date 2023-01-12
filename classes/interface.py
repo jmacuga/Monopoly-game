@@ -46,7 +46,7 @@ def show_final_status(game):
 
 
 def pause():
-    print('\n[Press any key to conntinue]')
+    print('\n[Press ENTER to conntinue]')
     input()
     clear()
 
@@ -102,13 +102,16 @@ def int_input():
     try:
         players_input = int(players_input)
     except (ValueError):
-        print('Input is incorrect. Please enter an integer.')
+        print('Input is incorrect. Please enter a positive integer.')
+        players_input = int_input()
+    if players_input < 0:
+        print('Input is incorrect. Please enter a positive integer.')
         players_input = int_input()
     return players_input
 
 
 def make_property_transaction(game):
-    if not game.player_can_afford(game.current_field().price()):
+    if not game.can_afford(game.current_field().price()):
         print('\nUnfortunately you cannot afford this property')
         return
     print('\nDo you want to buy this property?[Y/n')
@@ -144,7 +147,7 @@ def make_move(game):
 
 
 def pay_rent(game):
-    if not game.player_can_afford(game.current_field().current_rent()):
+    if not game.can_afford(game.current_field().current_rent()):
         print('You cannot afford to pay this rent.')
         # TODO
         game._win = True
@@ -159,12 +162,61 @@ def show_all_players_status(game):
     print(game.players_description())
 
 
-def show_current_player_status(game):
-    print(game.show_player_status())
+def show_current_player_status(game, streets_only=False):
+    print(game.show_player_status(streets_only=streets_only))
 
 
-def buy_house_hotel():
-    pass
+def field_input(game):
+    f_id = int_input()
+    if f_id == 0:
+        return 0
+    while not game.is_street_owner_by_id(f_id):
+        print('You are not owner of this field or this field is not a Street.')
+        return 0
+    return f_id
+
+
+def check_hotel_building_conditions(game, field_id):
+    if not game.can_build_hotel(field_id):
+        print('There must be 4 houses on field to build hotel.')
+        return False
+    if not game.hotels_build_evenly(field_id):
+        print('You must build 4 houses on every field of colour to start building hotels. Choose another field')
+        return False
+    if not game.can_afford_hotel(field_id):
+        print('You cannot afford this hotel')
+        return False
+    if game.is_hotel(field_id):
+        print('There already is a hotel on this field.')
+        return False
+    return True
+
+
+def check_house_building_conditions(game, field_id):
+    if not game.houses_build_evenly(field_id):
+        print('You must build houses evenly on every field in the same colour. Choose another field')
+        return False
+    if not game.can_afford_house(field_id):
+        print('You cannot afford this house')
+        return False
+    if not game.owns_all_of_colour(field_id):
+        print('You must own all fields in that colour to build a house')
+        return False
+    return True
+
+
+def buy_house_hotel(game):
+    print('\nYour cards:')
+    show_current_player_status(game, streets_only=True)
+    print(
+        'Which field fo you want to develop? Type field id to choose. [Type 0 to cancel]')
+    field_id = field_input(game)
+    if field_id == 0:
+        return
+    if game.can_build_hotel(field_id) and check_hotel_building_conditions(game, field_id):
+        game.build_hotel(field_id)
+    elif check_house_building_conditions(game, field_id):
+        game.build_house(field_id)
 
 
 def menu_action(menu_option, game):
@@ -173,13 +225,9 @@ def menu_action(menu_option, game):
     elif menu_option == MenuOption.SEE_YOURS:
         show_current_player_status(game)
     elif menu_option == MenuOption.BUY_HOUSE_HOTEL:
-        buy_house_hotel()
+        buy_house_hotel(game)
     elif menu_option == MenuOption.THROW_DICE:
         make_move(game)
-
-
-def players_input_bool():
-    pass
 
 
 def players_input_menu():

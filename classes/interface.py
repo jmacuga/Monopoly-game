@@ -202,6 +202,9 @@ def check_house_building_conditions(game, field_id):
     if not game.owns_all_of_colour(field_id):
         print('You must own all fields in that colour to build a house')
         return False
+    if not game.is_hotel(field_id):
+        print('You cannot add any more houses or hotel to this field.')
+        return False
     return True
 
 

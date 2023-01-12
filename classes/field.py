@@ -57,8 +57,10 @@ class PropertyField(Field):
                  name: str,
                  colour: str,
                  base_rent: int,
-                 prices:  Dict[str, int]):
+                 prices:  Dict[str, int],
+                 other_rents: Dict[str, int]):
         super().__init__(field_id, name)
+        self._other_rents = other_rents
         self._colour = colour
         self._base_rent = base_rent
         self._owner = None
@@ -91,8 +93,11 @@ class PropertyField(Field):
     def price(self) -> int:
         return self._price
 
+    def mortgage_price(self) -> int:
+        return self._other_rents['mortgage']
+
     def total_value(self) -> int:
-        return self.mortgage_cost()
+        return self.mortgage_price()
 
     def __str__(self) -> str:
         output_str = super().__str__()
@@ -102,6 +107,8 @@ class PropertyField(Field):
 
     def full_description_table(self) -> List[str, str]:
         table = super().description_table()
+        table.append(['colour', self._colour])
+        table.append(['rent', self._current_rent])
         table.append(['price', self._price])
         return table
 
@@ -130,8 +137,7 @@ class Street(PropertyField):
                  rent: int,
                  prices: Dict[str, int],
                  other_rents: Dict[str, int]):
-        super().__init__(field_id, name, colour, rent, prices)
-        self._other_rents = other_rents
+        super().__init__(field_id, name, colour, rent, prices, other_rents)
         self._prices = prices
         self._current_rent = self._base_rent
         self._houses_num = 0
@@ -176,9 +182,6 @@ class Street(PropertyField):
     def hotel_cost(self) -> int:
         return self._prices['hotel_cost']
 
-    def mortgage_price(self) -> int:
-        return self._other_rents['mortgage']
-
     def remove_house(self) -> None:
         if self._hotel or self.houses_num == 0:
             return
@@ -192,7 +195,7 @@ class Street(PropertyField):
         self.update_rent()
 
     def total_value(self) -> int:
-        value = self.mortgage_cost() + self._houses_num * self.house_cost * 0.5
+        value = self.mortgage_price() + self._houses_num * self.house_cost() * 0.5
         value += self.hotel_cost() if self._hotel else 0
         return value
 

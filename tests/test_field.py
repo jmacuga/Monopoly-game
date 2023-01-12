@@ -22,8 +22,8 @@ class TestField:
     def test_set_owner(self):
         player = Player()
         assert self.field.owner() is None
-        self.field.set_owner(player.player_id())
-        assert self.field.owner() == player.player_id()
+        self.field.set_owner(player)
+        assert self.field.owner() == player
 
     def test_put_player_on_field(self):
         player = Player()

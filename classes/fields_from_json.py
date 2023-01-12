@@ -24,14 +24,13 @@ def property_fields_from_json(filename):
         field_name = field_elem['name']
         rent = field_elem['rent']
         prices = field_elem['prices']
-
+        other_rents = field_elem["other_rents"]
         if field_type == "street":
-            other_rents = field_elem["other_rents"]
             field_item = Street(field_id, field_name, colour,
                                 rent, prices, other_rents)
         else:
             field_item = PropertyField(
-                field_id, field_name, colour, rent, prices)
+                field_id, field_name, colour, rent, prices, other_rents)
         fields.append(field_item)
     return fields
 

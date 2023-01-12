@@ -65,7 +65,7 @@ class TestGame:
         field = self.game.current_field()
         assert type(field) == PropertyField
         self.game.buy_current_property()
-        assert field.owner() == self.game._current_player.player_id()
+        assert field.owner() == self.game._current_player
         assert field.field_id() in self.game.\
             _current_player._owned_property_fields
 

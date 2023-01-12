@@ -14,10 +14,8 @@ class Game:
         self._board = board
         self._cur_player_id_in_array = 0
         self._current_player = None
-        self._winner = None
         self._current_dice_roll = None
         self._total_moves = 0
-        self._win = False
 
     def player_is_owner(self) -> bool:
         return self.current_field().owner() == self._current_player
@@ -28,9 +26,6 @@ class Game:
             self._board.get_field_by_id(0).put_player_on(player)
             player.set_position(0)
             player.earn_money(int(GameConstants.INITIAL_MONEY_PP))
-
-    def win(self) -> bool:
-        return self._win
 
     def add_player(self, player_name: str) -> None:
         self._players.append(Player(player_name))
@@ -125,21 +120,22 @@ class Game:
         rent = self.current_field().current_rent()
         self._current_player.spend_money(rent)
         # NOtAffordableError -> mortgage, selling properties
-        owner = self.get_player_by_id(self.current_field().owner())
+        owner = self.current_field().owner()
         owner.earn_money(rent)
 
     def is_win(self) -> bool:
-        if self.get_round_num() == GameConstants.MAX_NUM_OF_ROUNDS:
+        if self.get_round_num() > GameConstants.MAX_NUM_OF_ROUNDS:
             return True
         for player in self._players:
             if player.is_bancrupt():
                 return True
+        return False
 
     def find_winner(self) -> Player:
         winner = None
         max_fortune = 0
         for player in self._players:
-            if player.total_fortune() > max_fortune:
+            if self.total_fortune(player) > max_fortune:
                 winner = player
         return winner
 
@@ -156,13 +152,11 @@ class Game:
         for field_id in player.owned_property_fields():
             field = self._board.get_field_by_id(field_id)
             if player != self._current_player:
-                out_str += '\n' + \
-                    tabulate(field.description_table(),
-                             tablefmt='rounded_grid')
+                out_str += '\n' + tabulate(field.description_table(),
+                                           tablefmt='rounded_grid')
             else:
-                out_str += '\n' + \
-                    tabulate(field.full_description_table(),
-                             tablefmt='rounded_grid')
+                out_str += '\n' + tabulate(field.full_description_table(),
+                                           tablefmt='rounded_grid')
         return out_str
 
     def get_player_by_id(self, player_id: int) -> str:
@@ -177,3 +171,10 @@ class Game:
         if self._current_player.passed_start_field is False:
             raise PlayerError("Player didn't pass start field")
         self._current_player.earn_money(int(GameConstants.START_FIELD_BONUS))
+
+    def total_fortune(self, player) -> int:
+        fortune = player._money
+        for field_id in player._owned_property_fields:
+            fld = self._board.get_field_by_id(field_id)
+            fortune += fld.total_value()
+        return fortune

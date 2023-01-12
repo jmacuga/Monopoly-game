@@ -7,6 +7,9 @@
         "rent": 50,
         "prices": {
             "base_price": 100
+        },
+        "other_rents": {
+            "mortgage": 30
         }
     },
     {
@@ -17,6 +20,9 @@
         "rent": 50,
         "prices": {
             "base_price": 100
+        },
+        "other_rents": {
+            "mortgage": 30
         }
     },
     {

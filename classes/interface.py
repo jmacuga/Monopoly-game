@@ -25,11 +25,30 @@ def play(game: Game):
     clear()
     add_players(game)
     game.prepare_game()
-    while not game.win():
+    while not game.is_win():
+
         current_player_info(game)
         show_menu()
         menu_option = players_input_menu()
         menu_action(menu_option, game)
+        pause()
+    game_over(game)
+
+
+def game_over(game):
+    print(f'\n\nGAME OVER. The winner is: {game.find_winner().name()}')
+    print('\nFINAL RESULTS\n')
+    show_final_status(game)
+
+
+def show_final_status(game):
+    show_all_players_status(game)
+
+
+def pause():
+    print('\n[Press any key to conntinue]')
+    input()
+    clear()
 
 
 def add_one_player(game, names):
@@ -149,7 +168,6 @@ def buy_house_hotel():
 
 
 def menu_action(menu_option, game):
-    clear()
     if menu_option == MenuOption.SEE_ALL:
         show_all_players_status(game)
     elif menu_option == MenuOption.SEE_YOURS:

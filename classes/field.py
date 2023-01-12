@@ -66,6 +66,10 @@ class PropertyField(Field):
         self._owner = None
         self._current_rent = base_rent
         self._price = prices["base_price"]
+        self._mortgage = False
+
+    def is_mortaged(self):
+        return self._mortgage
 
     def base_rent(self) -> int:
         return self._base_rent
@@ -99,6 +103,9 @@ class PropertyField(Field):
     def total_value(self) -> int:
         return self.mortgage_price()
 
+    def update_rent(self) -> None:
+        self._current_rent = 0 if self._mortgage else self._base_rent
+
     def __str__(self) -> str:
         output_str = super().__str__()
         output_str += f'\ncolour: {self._colour}'
@@ -107,6 +114,9 @@ class PropertyField(Field):
 
     def full_description_table(self) -> List[str, str]:
         table = super().description_table()
+        if self._mortgage:
+            table.append(['MORTAGED', 'MORTAGED'])
+            return table
         table.append(['colour', self._colour])
         table.append(['rent', self._current_rent])
         table.append(['price', self._price])
@@ -124,9 +134,21 @@ class PropertyField(Field):
             owner_name = self._owner.name()
         table = super().step_on_description_table()
         table.append(['price', self._price])
+        table.append(['colour', self._colour])
+        table.append(['rent', self._current_rent])
         table.append(
             ['owner', owner_name])
+        if self._mortgage:
+            table.append(['MORTAGED', 'MORTAGED'])
         return table
+
+    def do_mortgage(self):
+        self._mortgage = True
+        self.update_rent()
+
+    def lift_the_mortgage(self):
+        self._mortgage = False
+        self.update_rent()
 
 
 class Street(PropertyField):

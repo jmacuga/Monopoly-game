@@ -120,27 +120,6 @@ class Game:
     def is_hotel(self, field_id):
         return self._board.get_field_by_id(field_id).hotel()
 
-    # def can_build_house(self, field_id: int) -> bool:
-    #     # if field_id not in self._current_player.owned_property_fields():
-    #     #     return False
-    #     field = self._board.get_field_by_id(field_id)
-    #     for f in self._board.get_all_fields_of_colour(field.colour()):
-    #         if field.houses_num() > f.houses_num() and not f.hotel():
-    #             return False
-    #     return False if field.houses_num() == 4 else \
-    #         self.owns_all_of_colour(
-    #             field) and self.player_can_afford(field.house_cost())
-
-    # def can_build_hotel(self, field_id: int) -> bool:
-    #     # if field_id not in self._current_player.owned_property_fields():
-    #     #     return False
-    #     field = self._board.get_field_by_id(field_id)
-    #     for f in self._board.get_all_fields_of_colour(field.colour()):
-    #         if f.houses_num() < 4:
-    #             return False
-    #     return False if field.hotel() else self.owns_all_of_colour(field) \
-    # and self.player_can_afford(field.hotel_cost())
-
     def build_house(self, field_id: int) -> None:
         field = self._board.get_field_by_id(field_id)
         self._current_player.spend_money(field.house_cost())

@@ -124,7 +124,8 @@ class Player:
         return self._owned_property_fields
 
     def is_bancrupt(self) -> bool:
-        return len(self._owned_property_fields) == 0 and self.money() == 0
+        return self.money() == 0
+        # return len(self._owned_property_fields) == 0 and self.money() == 0
 
     def __str__(self) -> str:
         output = [['name', self._name],

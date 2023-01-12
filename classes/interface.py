@@ -21,8 +21,25 @@ def menu_values():
     return [mem.value for mem in MenuOption]
 
 
+def print_welcome_text():
+    print('''
+$$\      $$\                                                   $$\\
+$$$\    $$$ |                                                  $$ |
+$$$$\  $$$$ | $$$$$$\  $$$$$$$\   $$$$$$\   $$$$$$\   $$$$$$\  $$ |$$\   $$\\
+$$\$$\$$ $$ |$$  __$$\ $$  __$$\ $$  __$$\ $$  __$$\ $$  __$$\ $$ |$$ |  $$ |
+$$ \$$$  $$ |$$ /  $$ |$$ |  $$ |$$ /  $$ |$$ /  $$ |$$ /  $$ |$$ |$$ |  $$ |
+$$ |\$  /$$ |$$ |  $$ |$$ |  $$ |$$ |  $$ |$$ |  $$ |$$ |  $$ |$$ |$$ |  $$ |
+$$ | \_/ $$ |\$$$$$$  |$$ |  $$ |\$$$$$$  |$$$$$$$  |\$$$$$$  |$$ |\$$$$$$$ |
+\__|     \__| \______/ \__|  \__| \______/ $$  ____/  \______/ \__| \____$$ |
+                                           $$ |                    $$\   $$ |
+                                           $$ |                    \$$$$$$  |
+                                           \__|                     \______/
+''')
+
+
 def play(game: Game):
     clear()
+    print_welcome_text()
     add_players(game)
     game.prepare_game()
     while not game.is_win():
@@ -148,9 +165,9 @@ def make_move(game):
 
 def pay_rent(game):
     if not game.can_afford(game.current_field().current_rent()):
-        print('You cannot afford to pay this rent.')
+        print('You cannot afford to pay this rent. You go bancrupt')
+        game._current_player._money = 0
         # TODO
-        game._win = True
         return
     game.pay_rent()
     print(

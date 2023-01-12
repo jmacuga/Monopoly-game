@@ -110,10 +110,12 @@ class Game:
         return self._board.get_field_by_id(field_id).houses_num() == 4
 
     def can_afford_house(self, field_id):
-        return self.can_afford(self._board.get_field_by_id(field_id).house_cost())
+        return self.can_afford(self._board.get_field_by_id(field_id
+                                                           ).house_cost())
 
     def can_afford_hotel(self, field_id):
-        return self.can_afford(self._board.get_field_by_id(field_id).hotel_cost())
+        return self.can_afford(self._board.get_field_by_id(field_id
+                                                           ).hotel_cost())
 
     def is_hotel(self, field_id):
         return self._board.get_field_by_id(field_id).hotel()
@@ -136,8 +138,8 @@ class Game:
     #     for f in self._board.get_all_fields_of_colour(field.colour()):
     #         if f.houses_num() < 4:
     #             return False
-    #     return False if field.hotel() else self.owns_all_of_colour(field) and \
-    #         self.player_can_afford(field.hotel_cost())
+    #     return False if field.hotel() else self.owns_all_of_colour(field) \
+    # and self.player_can_afford(field.hotel_cost())
 
     def build_house(self, field_id: int) -> None:
         field = self._board.get_field_by_id(field_id)
@@ -180,7 +182,9 @@ class Game:
             out_str += '\n' + self.show_player_status(player=player)
         return out_str
 
-    def show_player_status(self, streets_only: bool = False, player: Player = None, ) -> str:
+    def show_player_status(self,
+                           streets_only: bool = False,
+                           player: Player = None, ) -> str:
         if not player:
             player = self._current_player
         out_str = str(player)

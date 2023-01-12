@@ -181,7 +181,8 @@ def check_hotel_building_conditions(game, field_id):
         print('There must be 4 houses on field to build hotel.')
         return False
     if not game.hotels_build_evenly(field_id):
-        print('You must build 4 houses on every field of colour to start building hotels. Choose another field')
+        print('You must build 4 houses on every field of colour' +
+              ' to start building hotels. Choose another field')
         return False
     if not game.can_afford_hotel(field_id):
         print('You cannot afford this hotel')
@@ -194,7 +195,8 @@ def check_hotel_building_conditions(game, field_id):
 
 def check_house_building_conditions(game, field_id):
     if not game.houses_build_evenly(field_id):
-        print('You must build houses evenly on every field in the same colour. Choose another field')
+        print('You must build houses evenly on every field in the same' +
+              'colour. Choose another field')
         return False
     if not game.can_afford_house(field_id):
         print('You cannot afford this house')
@@ -212,11 +214,13 @@ def buy_house_hotel(game):
     print('\nYour cards:')
     show_current_player_status(game, streets_only=True)
     print(
-        'Which field fo you want to develop? Type field id to choose. [Type 0 to cancel]')
+        'Which field fo you want to develop? Type field id to choose.'
+        ' [Type 0 to cancel]')
     field_id = field_input(game)
     if field_id == 0:
         return
-    if game.can_build_hotel(field_id) and check_hotel_building_conditions(game, field_id):
+    if game.can_build_hotel(field_id) and check_hotel_building_conditions(
+            game, field_id):
         game.build_hotel(field_id)
     elif check_house_building_conditions(game, field_id):
         game.build_house(field_id)

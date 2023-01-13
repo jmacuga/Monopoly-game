@@ -154,7 +154,7 @@ def make_move(game):
     print('You moved to field :\n' +
           tabulate(game.current_field().step_on_description_table(),
                    tablefmt='rounded_grid'))
-    if game._current_player.passed_starst_field:
+    if game._current_player.passed_start_field:
         passing_start_field(game)
     if isinstance(game.current_field(), PropertyField) and \
             game.current_field().owner() is None:

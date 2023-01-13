@@ -160,7 +160,8 @@ def make_move(game):
             game.current_field().owner() is None:
         make_property_transaction(game)
     elif isinstance(game.current_field(), PropertyField) and \
-            not game.player_is_owner() and not game.current_field().is_mortgaged():
+            not game.player_is_owner() and \
+            not game.current_field().is_mortgaged():
         pay_rent(game)
     game.change_player()
 
@@ -272,7 +273,8 @@ def sell_house_hotel(game):
     print('\nYour cards:')
     show_current_player_status(game, streets_only=True)
     print(
-        'On which field fo you want to sell house/hotel? Type field id to choose.'
+        'On which field fo you want to sell house/hotel?' +
+        ' Type field id to choose.'
         ' [Type 0 to cancel]')
     field_id = street_input(game)
     if field_id == 0:
@@ -308,7 +310,8 @@ def mortgage(game):
     if mortgage_conditions(game, field):
         game.mortgage(field)
         print(
-            f'You earned {field.mortgage_price()} for mortage of {field.name()}')
+            f'You earned {field.mortgage_price()}' +
+            f' for mortage of {field.name()}')
 
 
 def menu_action(menu_option, game):

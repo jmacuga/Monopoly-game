@@ -139,7 +139,8 @@ class Game:
         self._current_player.earn_money(field.mortgage_price())
 
     def houses_on_street(self, field):
-        return type(field) == Street and (field.hotel() or field.houses_num() > 0)
+        return type(field) == Street and (field.hotel() or
+                                          field.houses_num() > 0)
 
     def pay_rent(self) -> None:
         if self.current_field() in self._current_player._owned_property_fields:

@@ -154,13 +154,13 @@ def make_move(game):
     print('You moved to field :\n' +
           tabulate(game.current_field().step_on_description_table(),
                    tablefmt='rounded_grid'))
-    if game._current_player.passed_start_field:
+    if game._current_player.passed_starst_field:
         passing_start_field(game)
     if isinstance(game.current_field(), PropertyField) and \
             game.current_field().owner() is None:
         make_property_transaction(game)
     elif isinstance(game.current_field(), PropertyField) and \
-            not game.player_is_owner():
+            not game.player_is_owner() and not game.current_field().is_mortgaged():
         pay_rent(game)
     game.change_player()
 
@@ -185,12 +185,22 @@ def show_current_player_status(game, streets_only=False):
     print(game.show_player_status(streets_only=streets_only))
 
 
-def field_input(game):
+def street_input(game):
     f_id = int_input()
     if f_id == 0:
         return 0
     while not game.is_street_owner_by_id(f_id):
         print('You are not owner of this field or this field is not a Street.')
+        return 0
+    return f_id
+
+
+def property_input(game):
+    f_id = int_input()
+    if f_id == 0:
+        return 0
+    while not game.player_is_owner(f_id):
+        print('You are not owner of this field.')
         return 0
     return f_id
 
@@ -235,7 +245,7 @@ def buy_house_hotel(game):
     print(
         'Which field fo you want to develop? Type field id to choose.'
         ' [Type 0 to cancel]')
-    field_id = field_input(game)
+    field_id = street_input(game)
     if field_id == 0:
         return
     field = game.get_field_by_id(field_id)
@@ -264,7 +274,7 @@ def sell_house_hotel(game):
     print(
         'On which field fo you want to sell house/hotel? Type field id to choose.'
         ' [Type 0 to cancel]')
-    field_id = field_input(game)
+    field_id = street_input(game)
     if field_id == 0:
         return
     field = game.get_field_by_id(field_id)
@@ -278,6 +288,29 @@ def sell_house_hotel(game):
               f' for selling house from {field.name()}')
 
 
+def mortgage_conditions(game, field):
+    if game.houses_on_street(field):
+        print("You must sell all houses and hotels from field to mortgage.")
+        return False
+    return True
+
+
+def mortgage(game):
+    print('\nYour cards:')
+    show_current_player_status(game, streets_only=True)
+    print(
+        'On which field fo you want to mortgage? Type field id to choose.'
+        ' [Type 0 to cancel]')
+    field_id = property_input(game)
+    if field_id == 0:
+        return
+    field = game.get_field_by_id(field_id)
+    if mortgage_conditions(game, field):
+        game.mortgage(field)
+        print(
+            f'You earned {field.mortgage_price()} for mortage of {field.name()}')
+
+
 def menu_action(menu_option, game):
     if menu_option == MenuOption.SEE_ALL:
         show_all_players_status(game)
@@ -288,7 +321,7 @@ def menu_action(menu_option, game):
     elif menu_option == MenuOption.SELL_HOUSE_HOTEL:
         sell_house_hotel(game)
     elif menu_option == MenuOption.MORTGAGE:
-        # meortgage(game)
+        mortgage(game)
         pass
     elif menu_option == MenuOption.THROW_DICE:
         make_move(game)

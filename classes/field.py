@@ -68,7 +68,7 @@ class PropertyField(Field):
         self._price = prices["base_price"]
         self._mortgage = False
 
-    def is_mortaged(self):
+    def is_mortgaged(self):
         return self._mortgage
 
     def base_rent(self) -> int:
@@ -115,7 +115,7 @@ class PropertyField(Field):
     def full_description_table(self) -> List[str, str]:
         table = super().description_table()
         if self._mortgage:
-            table.append(['MORTAGED', 'MORTAGED'])
+            table.append(['MORTGAGED', 'MORTGAGED'])
             return table
         table.append(['colour', self._colour])
         table.append(['rent', self._current_rent])
@@ -139,7 +139,7 @@ class PropertyField(Field):
         table.append(
             ['owner', owner_name])
         if self._mortgage:
-            table.append(['MORTAGED', 'MORTAGED'])
+            table.append(['MORTGAGED', 'MORTGAGED'])
         return table
 
     def do_mortgage(self):

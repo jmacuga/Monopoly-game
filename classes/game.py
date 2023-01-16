@@ -16,6 +16,10 @@ class Game:
         self._current_player = None
         self._current_dice_roll = None
         self._total_moves = 0
+        self._win = False
+
+    def win(self):
+        return self._win
 
     def player_is_owner(self, field_id: Field = None) -> bool:
         if field_id is None:
@@ -124,7 +128,7 @@ class Game:
         return True
 
     def is_house_to_sell(self, field):
-        return type(field) == Street or field.houses() > 0
+        return type(field) == Street and field.houses() > 0
 
     def sell_hotel(self, field: Field) -> None:
         self._current_player.earn_money(field.hotel_cost())
@@ -137,6 +141,11 @@ class Game:
     def mortgage(self, field: Field) -> None:
         field.do_mortgage()
         self._current_player.earn_money(field.mortgage_price())
+
+    def lift_mortgage(self, field: Field) -> None:
+        field.lift_mortgage()
+        self._current_player.spend_money(
+            int(round(field.mortgage_price() * 1.1)))
 
     def houses_on_street(self, field):
         return type(field) == Street and (field.hotel() or
@@ -153,10 +162,13 @@ class Game:
 
     def is_win(self) -> bool:
         if self.get_round_num() > GameConstants.MAX_NUM_OF_ROUNDS:
+            self._win = True
             return True
         for player in self._players:
-            if player.is_bancrupt():
+            if self.total_fortune(player) == 0:
+                self._win = True
                 return True
+        self._win = False
         return False
 
     def find_winner(self) -> Player:
@@ -204,9 +216,14 @@ class Game:
             raise PlayerError("Player didn't pass start field")
         self._current_player.earn_money(int(GameConstants.START_FIELD_BONUS))
 
-    def total_fortune(self, player) -> int:
+    def total_fortune(self, player: Player = None) -> int:
+        if player is None:
+            player = self._current_player
         fortune = player._money
         for field_id in player._owned_property_fields:
             fld = self._board.get_field_by_id(field_id)
             fortune += fld.total_value()
         return fortune
+
+    def end_game(self):
+        self._win = True

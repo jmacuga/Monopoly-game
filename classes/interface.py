@@ -12,7 +12,14 @@ class MenuOption(IntEnum):
     BUY_HOUSE_HOTEL = 3
     SELL_HOUSE_HOTEL = 4
     MORTGAGE = 5
-    THROW_DICE = 6
+    LIFT_MORTGAGE = 6
+    THROW_DICE = 7
+
+
+class BancruptOption(IntEnum):
+    SEE_YOURS = 1
+    SELL_HOUSE_HOTEL = 2
+    MORTGAGE = 3
 
 
 def clear():
@@ -39,13 +46,14 @@ $$ | \_/ $$ |\$$$$$$  |$$ |  $$ |\$$$$$$  |$$$$$$$  |\$$$$$$  |$$ |\$$$$$$$ |
 ''')
 
 
-def play(game: Game):
-    clear()
-    print_welcome_text()
-    add_players(game)
-    game.prepare_game()
-    while not game.is_win():
-
+def play(game: Game, resumed: bool = False):
+    if not resumed:
+        clear()
+        print_welcome_text()
+        add_players(game)
+        game.prepare_game()
+    while not game.win():
+        game.is_win()
         current_player_info(game)
         show_menu()
         menu_option = players_input_menu()
@@ -87,7 +95,7 @@ def add_players(game):
     add_one_player(game, names)
     answer = True
     while len(game._players) < GameConstants.MAX_PLAYERS_NUM and answer:
-        print('Do you want to add next player? [Y/n]')
+        print('Do you want to add next player? ([Y]/n)')
         answer = bool_input()
         if answer:
             print("Enter player's name:")
@@ -133,7 +141,7 @@ def make_property_transaction(game):
     if not game.can_afford(game.current_field().price()):
         print('\nUnfortunately you cannot afford this property')
         return
-    print('\nDo you want to buy this property?[Y/n]')
+    print('\nDo you want to buy this property? ([Y]/n)')
     answer = bool_input()
     if answer:
         game.buy_current_property()
@@ -166,15 +174,44 @@ def make_move(game):
     game.change_player()
 
 
+def bancrupt_menu(menu_option, game):
+    if menu_option == BancruptOption.SEE_YOURS:
+        show_current_player_status(game)
+    elif menu_option == BancruptOption.SELL_HOUSE_HOTEL:
+        sell_house_hotel(game)
+    elif menu_option == BancruptOption.MORTGAGE:
+        mortgage(game)
+
+
+def show_bancrupt_menu():
+    text = '''BANCRUPT MENU press number key to pick option:
+    1. See your cards and money
+    2. Sell house/ hotel
+    3. Mortgage property
+    4. Lift mortgage from porperty
+    '''
+    print(text)
+
+
 def pay_rent(game):
-    if not game.can_afford(game.current_field().current_rent()):
-        print('You cannot afford to pay this rent. You go bancrupt')
-        game._current_player._money = 0
-        # TODO
-        return
+    amount = game.current_field().current_rent()
+    if not game.can_afford(amount):
+        print('You cannot afford to pay this rent.')
+        if game.total_fortune() > amount:
+            # if game.total_fortune() > 0:
+            while not game.can_afford(amount):
+                print("You must sell some houses or mortgage properties.")
+                show_bancrupt_menu()
+                menu_option = players_input_menu()
+                bancrupt_menu(menu_option, game)
+                pause()
+        else:
+            print("You don't have any property to mortgage. You go bancrupt")
+            game.end_game()
+            return
     game.pay_rent()
     print(
-        f'You paid {game.current_field().current_rent()}' +
+        f'You paid {amount}' +
         f' to {game.get_current_field_owner_name()}')
 
 
@@ -294,12 +331,16 @@ def mortgage_conditions(game, field):
     if game.houses_on_street(field):
         print("You must sell all houses and hotels from field to mortgage.")
         return False
+    if field.is_mortgaged():
+        print("This field is already mortgaged")
+        return False
     return True
 
 
 def mortgage(game):
+    # TODO if mortgage already done
     print('\nYour cards:')
-    show_current_player_status(game, streets_only=True)
+    show_current_player_status(game)
     print(
         'On which field fo you want to mortgage? Type field id to choose.'
         ' [Type 0 to cancel]')
@@ -314,6 +355,30 @@ def mortgage(game):
             f' for mortage of {field.name()}')
 
 
+def lift_mortgage_conditions(game, field):
+    if not field.is_mortgaged():
+        print('You can lift mortage only from mortaged fields.')
+        return False
+    return True
+
+
+def lift_mortgage(game):
+    print('\nYour mortaged cards:')
+    show_current_player_status(game)
+    print('To lift mortgage you have to pay additional 10% of'
+          ' mortgage price. Type field id to choose.'
+          ' [Type 0 to cancel]')
+    field_id = property_input(game)
+    if field_id == 0:
+        return
+    field = game.get_field_by_id(field_id)
+    if lift_mortgage_conditions(game, field):
+        game.lift_mortgage(field)
+        print(
+            f'You have spend {round(field.mortgage_price() * 1.1)} on lifting'
+            f'mortgage of {field.name()}')
+
+
 def menu_action(menu_option, game):
     if menu_option == MenuOption.SEE_ALL:
         show_all_players_status(game)
@@ -325,7 +390,8 @@ def menu_action(menu_option, game):
         sell_house_hotel(game)
     elif menu_option == MenuOption.MORTGAGE:
         mortgage(game)
-        pass
+    elif menu_option == MenuOption.LIFT_MORTGAGE:
+        lift_mortgage(game)
     elif menu_option == MenuOption.THROW_DICE:
         make_move(game)
 
@@ -346,9 +412,10 @@ def show_menu():
     text = '''MAIN MENU press number key to pick option:
     1. See all players cards and money
     2. See your cards and money
-    3. Buy house/hotel
+    3. Buy house/ hotel
     4. Sell house/ hotel
     5. Mortgage property
-    6. Throw dice to make your move
+    6. Lift mortgage from porperty
+    7. Throw dice to make your move
     '''
     print(text)

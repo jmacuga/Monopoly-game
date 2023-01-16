@@ -15,6 +15,10 @@ class HotelError(Exception):
     pass
 
 
+class MortgageError(Exception):
+    pass
+
+
 class Field:
     def __init__(self, field_id: int, name: str):
         self._field_id = field_id
@@ -116,16 +120,20 @@ class PropertyField(Field):
         table = super().description_table()
         if self._mortgage:
             table.append(['MORTGAGED', 'MORTGAGED'])
-            return table
         table.append(['colour', self._colour])
         table.append(['rent', self._current_rent])
         table.append(['price', self._price])
+        table.append(['mortgage price', self.mortgage_price()])
         return table
 
     def description_table(self) -> List[str, str]:
         table = super().description_table()
+        if self._mortgage:
+            table.append(['MORTGAGED', 'MORTGAGED'])
+            return table
         table.append(['colour', self._colour])
         table.append(['rent', self._current_rent])
+        table.append(['mortgage price', self.mortgage_price()])
         return table
 
     def step_on_description_table(self) -> List[str, str]:
@@ -133,20 +141,25 @@ class PropertyField(Field):
         if self._owner is not None:
             owner_name = self._owner.name()
         table = super().step_on_description_table()
-        table.append(['price', self._price])
-        table.append(['colour', self._colour])
-        table.append(['rent', self._current_rent])
         table.append(
             ['owner', owner_name])
         if self._mortgage:
             table.append(['MORTGAGED', 'MORTGAGED'])
+            return table
+        table.append(['colour', self._colour])
+        table.append(['rent', self._current_rent])
+        table.append(['price', self._price])
         return table
 
     def do_mortgage(self):
+        if self._mortgage:
+            raise MortgageError('Field already mortgaged')
         self._mortgage = True
         self.update_rent()
 
-    def lift_the_mortgage(self):
+    def lift_mortgage(self):
+        if not self._mortgage:
+            raise MortgageError('Field not mortgaged')
         self._mortgage = False
         self.update_rent()
 
@@ -217,8 +230,10 @@ class Street(PropertyField):
         self.update_rent()
 
     def total_value(self) -> int:
+        if self.is_mortgaged():
+            return 0
         value = self.mortgage_price() + self._houses_num * \
-            self.house_cost() * 0.5
+            self.house_cost()
         value += self.hotel_cost() if self._hotel else 0
         return value
 

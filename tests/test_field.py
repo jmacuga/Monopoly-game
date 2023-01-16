@@ -5,9 +5,10 @@ import pytest
 
 
 class TestField:
-    field = PropertyField(0, 'start', 'blue', 50, {"base_price": 100})
+    field = PropertyField(0, 'start', 'blue', 50, {
+                          "base_price": 100}, {"mortgage": 50})
     other_field = PropertyField(
-        20, 'train station', 'green', 50, {"base_price": 100})
+        20, 'train station', 'green', 50, {"base_price": 100}, {"mortgage": 50})
 
     def test_set_rent(self):
         assert self.field.base_rent() == 50

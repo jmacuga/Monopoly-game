@@ -18,13 +18,18 @@ def main(arguments):
     special_fields = ffjson.special_fields_from_json(SPECIAL_FIELDS)
     # chance_cards = ffjson.chance_cards_from_json(CHANCE_CARDS)
     num_of_coulour = ffjson.number_of_colour_from_json(NUMBER_OF_COLOUR)
+
     parser = argparse.ArgumentParser()
     parser.add_argument('--resume', help="name of file with target game")
     args = parser.parse_args()
     if args.resume is not None:
-        with open(args.resume, 'rb') as pkl:
-            game = pickle.load(pkl)
-        interface.play(game, resumed=True)
+        try:
+            with open(str(args.resume), 'rb') as pkl:
+                game = pickle.load(pkl)
+            interface.play(game, resumed=True)
+        except FileNotFoundError as e:
+            print(e)
+
     else:
         board = Board(property_fields, num_of_coulour, special_fields)
         game = Game(board)

@@ -3,17 +3,20 @@ from classes.field import PropertyField
 from enum import IntEnum
 from classes.game_constants import GameConstants
 import os
+import sys
+import pickle
 from tabulate import tabulate
 
 
 class MenuOption(IntEnum):
-    SEE_ALL = 1
-    SEE_YOURS = 2
-    BUY_HOUSE_HOTEL = 3
-    SELL_HOUSE_HOTEL = 4
-    MORTGAGE = 5
-    LIFT_MORTGAGE = 6
-    THROW_DICE = 7
+    THROW_DICE = 1
+    SEE_ALL = 2
+    SEE_YOURS = 3
+    BUY_HOUSE_HOTEL = 4
+    SELL_HOUSE_HOTEL = 5
+    MORTGAGE = 6
+    LIFT_MORTGAGE = 7
+    SAVE_AND_EXIT = 8
 
 
 class BancruptOption(IntEnum):
@@ -120,7 +123,7 @@ def word_input():
     word = input().strip().split()
     if len(word) != 1:
         print('Please enter one word')
-        word = word_input()
+        word = [word_input()]
     return word[0]
 
 
@@ -379,6 +382,14 @@ def lift_mortgage(game):
             f'mortgage of {field.name()}')
 
 
+def save_and_exit(game):
+    print('Enter the name of file:')
+    filename = word_input()
+    with open(filename, 'wb') as pkl:
+        pickle.dump(game, pkl)
+    sys.exit(f'GAME SAVED TO {filename}')
+
+
 def menu_action(menu_option, game):
     if menu_option == MenuOption.SEE_ALL:
         show_all_players_status(game)
@@ -394,6 +405,8 @@ def menu_action(menu_option, game):
         lift_mortgage(game)
     elif menu_option == MenuOption.THROW_DICE:
         make_move(game)
+    elif menu_option == MenuOption.SAVE_AND_EXIT:
+        save_and_exit(game)
 
 
 def players_input_menu():
@@ -410,12 +423,13 @@ def current_player_info(game):
 
 def show_menu():
     text = '''MAIN MENU press number key to pick option:
-    1. See all players cards and money
-    2. See your cards and money
-    3. Buy house/ hotel
-    4. Sell house/ hotel
-    5. Mortgage property
-    6. Lift mortgage from porperty
-    7. Throw dice to make your move
+    1. Throw dice to make your move
+    2. See all players cards and money
+    3. See your cards and money
+    4. Buy house/ hotel
+    5. Sell house/ hotel
+    6. Mortgage property
+    7. Lift mortgage from porperty
+    8. Save and exit
     '''
     print(text)

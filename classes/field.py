@@ -267,33 +267,3 @@ class Street(PropertyField):
 class SpecialField(Field):
     def __init__(self, field_id, name):
         super().__init__(field_id, name)
-
-
-class Station(PropertyField):
-    def __init__(self, field_id, name, colour, rent):
-        super().__init__(field_id, name, colour, rent)
-
-
-class ChanceField(Field):
-    def __init__(self):
-        super.__init__()
-
-
-class CommunityChestField(Field):
-    def __init__(self):
-        super().__init__()
-
-
-class IncomeTaxField(Field):
-    def __init__(self):
-        super().__init__()
-
-
-class JailField(Field):
-    def __init__(self):
-        super().__init__()
-
-
-class FreeParkingField(Field):
-    def __init__(self):
-        super().__init__()

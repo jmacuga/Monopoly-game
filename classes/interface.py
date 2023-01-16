@@ -1,5 +1,5 @@
 from classes.game import Game
-from classes.field import PropertyField
+from classes.field import PropertyField, SpecialField
 from enum import IntEnum
 from classes.game_constants import GameConstants
 import os
@@ -158,22 +158,29 @@ def passing_start_field(game):
           ' for passsing start field')
 
 
+# def chance_field_action(game):
+    # print(game.chance_field_action())
+
+
 def make_move(game):
     game.dice_roll()
     print(f'\nYour dice roll result: {game.current_dice_roll()}')
     game.move_pawn_number_of_dots()
+    field = game.current_field()
     print('You moved to field :\n' +
-          tabulate(game.current_field().step_on_description_table(),
+          tabulate(field.step_on_description_table(),
                    tablefmt='rounded_grid'))
     if game._current_player.passed_start_field:
         passing_start_field(game)
-    if isinstance(game.current_field(), PropertyField) and \
-            game.current_field().owner() is None:
+    if isinstance(field, PropertyField) and \
+            field.owner() is None:
         make_property_transaction(game)
-    elif isinstance(game.current_field(), PropertyField) and \
+    elif isinstance(field, PropertyField) and \
             not game.player_is_owner() and \
-            not game.current_field().is_mortgaged():
+            not field.is_mortgaged():
         pay_rent(game)
+    elif type(field) == SpecialField and field.name() == 'chance':
+        print(game.chance_field_action())
     game.change_player()
 
 

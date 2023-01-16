@@ -227,3 +227,11 @@ class Game:
 
     def end_game(self):
         self._win = True
+
+    def chance_field_action(self):
+        card = self._board.get_new_chance_card()
+        card.use_card(self._current_player)
+        return str(self._board.current_chance_card)
+
+    # def get_new_chance_card(self):
+    #     return self._board.get_new_chance_card()

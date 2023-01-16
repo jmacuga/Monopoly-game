@@ -1,5 +1,6 @@
 import json
 from classes.field import PropertyField, Street, SpecialField
+from classes.card import ChanceCard
 
 
 class DoubleFieldIdError:
@@ -54,4 +55,15 @@ def special_fields_from_json(filename):
 
 
 def chance_cards_from_json(filename):
-    pass
+    cards_collection = load_from_file(filename)
+    cards = []
+    for card in cards_collection:
+        card_id = card['card_id']
+        if card_id in [card.card_id() for card in cards]:
+            raise DoubleFieldIdError
+        description = card['description']
+        action = card['action']
+        money = card['money']
+        field = ChanceCard(card_id, description, action, money)
+        cards.append(field)
+    return cards

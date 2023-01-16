@@ -1,4 +1,4 @@
-from enum import IntEnum
+from enum import IntEnum, Enum
 
 
 class GameConstants(IntEnum):
@@ -8,3 +8,8 @@ class GameConstants(IntEnum):
     MAX_NUM_OF_ROUNDS = 20
     MAX_PLAYERS_NUM = 3
     START_FIELD_BONUS = 0
+
+
+class ChanceFieldAction(Enum):
+    PAY = 'pay'
+    EARN = 'earn'

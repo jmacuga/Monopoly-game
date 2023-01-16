@@ -10,12 +10,12 @@ class Board:
                  special_fields: List[Field] = None,
                  chance_cards=None):
         self._property_fields = property_fields
+        if special_fields is None:
+            special_fields = []
         self._special_fields = special_fields
-        if self._special_fields is None:
-            self._special_fields = []
-        self._chance_cards = cycle(chance_cards)
         if chance_cards is None:
-            self._chance_cards = cycle([])
+            chance_cards = []
+        self._chance_cards = cycle(chance_cards)
         self._all_fields = self._generate_all_fields_dict()
         self._number_of_fields_colour = num_of_fields_col
         self.current_chance_card = None

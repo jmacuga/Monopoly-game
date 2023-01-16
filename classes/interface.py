@@ -1,7 +1,7 @@
 from classes.game import Game
 from classes.field import PropertyField, SpecialField
 from enum import IntEnum
-from classes.game_constants import GameConstants
+from classes.game_constants import GameConstants, ChanceFieldAction
 import os
 import sys
 import pickle
@@ -158,8 +158,15 @@ def passing_start_field(game):
           ' for passsing start field')
 
 
-# def chance_field_action(game):
-    # print(game.chance_field_action())
+def chance_field_action(game):
+    card = game.get_new_chance_card()
+    print(card)
+    if card.action() == ChanceFieldAction.PAY.value:
+        if not game.can_afford(card.money()):
+            print('You cannot afford to pay.')
+            if not make_money_from_properties(game, card.money()):
+                return
+    game.chance_field_action()
 
 
 def make_move(game):
@@ -180,7 +187,8 @@ def make_move(game):
             not field.is_mortgaged():
         pay_rent(game)
     elif type(field) == SpecialField and field.name() == 'chance':
-        print(game.chance_field_action())
+        chance_field_action(game)
+
     game.change_player()
 
 
@@ -203,21 +211,26 @@ def show_bancrupt_menu():
     print(text)
 
 
+def make_money_from_properties(game, amount):
+    if game.total_fortune() > amount:
+        while not game.can_afford(amount):
+            print("You must sell some houses or mortgage properties.")
+            show_bancrupt_menu()
+            menu_option = players_input_menu()
+            bancrupt_menu(menu_option, game)
+            pause()
+        return True
+    else:
+        print("You don't have any property to mortgage. You go bancrupt")
+        game.end_game()
+        return False
+
+
 def pay_rent(game):
     amount = game.current_field().current_rent()
     if not game.can_afford(amount):
         print('You cannot afford to pay this rent.')
-        if game.total_fortune() > amount:
-            # if game.total_fortune() > 0:
-            while not game.can_afford(amount):
-                print("You must sell some houses or mortgage properties.")
-                show_bancrupt_menu()
-                menu_option = players_input_menu()
-                bancrupt_menu(menu_option, game)
-                pause()
-        else:
-            print("You don't have any property to mortgage. You go bancrupt")
-            game.end_game()
+        if not make_money_from_properties(game, amount):
             return
     game.pay_rent()
     print(

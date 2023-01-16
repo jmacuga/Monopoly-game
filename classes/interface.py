@@ -341,7 +341,6 @@ def mortgage_conditions(game, field):
 
 
 def mortgage(game):
-    # TODO if mortgage already done
     print('\nYour cards:')
     show_current_player_status(game)
     print(
@@ -433,3 +432,12 @@ def show_menu():
     8. Save and exit
     '''
     print(text)
+
+
+def load_game(filename):
+    try:
+        with open(filename, 'rb') as pkl:
+            game = pickle.load(pkl)
+        play(game, resumed=True)
+    except FileNotFoundError as e:
+        print(e)

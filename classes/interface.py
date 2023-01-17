@@ -222,7 +222,7 @@ def make_money_from_properties(game, amount):
         return True
     else:
         print("You don't have any property to mortgage. You go bancrupt")
-        game.end_game()
+        game.make_bancrupt()
         return False
 
 

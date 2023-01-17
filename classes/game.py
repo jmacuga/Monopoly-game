@@ -75,10 +75,13 @@ class Game:
         field.set_owner(self._current_player)
 
     def change_player(self) -> None:
-        self._total_moves += 1
         self._cur_player_id_in_array = (
             self._cur_player_id_in_array + 1) % len(self._players)
         self._current_player = self._players[self._cur_player_id_in_array]
+        if self._current_player.is_bancrupt:
+            self.change_player()
+        else:
+            self._total_moves += 1
 
     def get_field_by_id(self, field_id: int) -> Field:
         return self._board.get_field_by_id(field_id)
@@ -156,20 +159,16 @@ class Game:
             raise ValueError('Player cannot pay rent to himself')
         rent = self.current_field().current_rent()
         self._current_player.spend_money(rent)
-        # NOtAffordableError -> mortgage, selling properties
         owner = self.current_field().owner()
         owner.earn_money(rent)
 
     def is_win(self) -> bool:
         if self.get_round_num() > GameConstants.MAX_NUM_OF_ROUNDS:
             self._win = True
-            return True
-        for player in self._players:
-            if self.total_fortune(player) == 0:
-                self._win = True
-                return True
-        self._win = False
-        return False
+        else:
+            count = sum([not p.is_bancrupt for p in self._players])
+            self._win = False if count > 1 else True
+        return self._win
 
     def find_winner(self) -> Player:
         winner = None
@@ -182,7 +181,8 @@ class Game:
     def players_description(self) -> str:
         out_str = ''
         for player in self._players:
-            out_str += '\n' + self.show_player_status(player=player)
+            if not player.is_bancrupt:
+                out_str += '\n' + self.show_player_status(player=player)
         return out_str
 
     def show_player_status(self,
@@ -233,5 +233,15 @@ class Game:
         card.use_card(self._current_player)
         return str(self._board.current_chance_card)
 
-    # def get_new_chance_card(self):
-    #     return self._board.get_new_chance_card()
+    def get_new_chance_card(self):
+        return self._board.get_new_chance_card()
+
+    def make_bancrupt(self):
+        for field_id in self._current_player._owned_property_fields:
+            fld = self._board.get_field_by_id(field_id)
+            if fld.is_mortgaged():
+                fld.lift_mortgage()
+            fld.set_owner(None)
+        self._current_player._owned_property_fields = []
+        self._current_player._money = 0
+        self._current_player.is_bancrupt = True

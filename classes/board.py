@@ -4,6 +4,10 @@ from classes.field import Field
 from itertools import cycle
 
 
+class ColourError(Exception):
+    pass
+
+
 class Board:
     def __init__(self, property_fields: List[Field],
                  num_of_fields_col: Dict[str, int],
@@ -20,6 +24,9 @@ class Board:
         self._number_of_fields_colour = num_of_fields_col
         self.current_chance_card = None
 
+    def current_chance_card(self):
+        return self.current_chance_card
+
     def _generate_all_fields_dict(self) -> Dict[int, Field]:
         all_fields = {}
         for field in self._property_fields + self._special_fields:
@@ -32,21 +39,18 @@ class Board:
     def get_fields_owner(self, field_id: int) -> int:
         return self._all_fields[field_id].owner()
 
-# TODO test
     def get_max_number_of_same_colour(self, colour: str) -> int:
         return self._number_of_fields_colour[colour]
 
-# TODO test
     def get_all_fields_of_colour(self, colour: str) -> List[Field]:
         same_colour = []
         for f in self._property_fields:
             if f.colour() == colour:
                 same_colour.append(f)
+        if len(same_colour) == 0:
+            raise ColourError("Colour doesn't exist")
         return same_colour
 
     def get_new_chance_card(self):
         self.current_chance_card = next(self._chance_cards)
-        return self.current_chance_card
-
-    def current_chance_card(self):
         return self.current_chance_card

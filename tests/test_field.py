@@ -49,6 +49,29 @@ class TestField:
         with pytest.raises(PlayerError):
             self.field.take_player_from(player)
 
+    def test_mortgage(self):
+        self.field.do_mortgage()
+        assert self.field.is_mortgaged()
+        assert self.field.current_rent() == 0
+
+    def test_lift_mortgage(self):
+        self.field.lift_mortgage()
+        assert not self.field.is_mortgaged()
+        assert self.field.current_rent() == self.field.base_rent()
+
+    def test_return_to_bank(self):
+        player = Player()
+        self.field.set_owner(player)
+        self.field.do_mortgage()
+        self.field.return_to_bank()
+        assert self.field.owner() is None
+        assert not self.field.is_mortgaged()
+
+    def test_total_value(self):
+        assert self.field.total_value() == self.field.price() / 2
+        self.field.do_mortgage()
+        assert self.field.total_value() == 0
+
 
 class TestStreetField:
     field_id = 1
@@ -137,3 +160,22 @@ class TestStreetField:
                         self.rent, self.prices, self.other_rents)
         assert street.house_cost() == self.prices['house_cost']
         assert street.hotel_cost() == self.prices['hotel_cost']
+
+    def test_return_to_bank(self):
+        street = Street(self.field_id, self.name, self.colour,
+                        self.rent, self.prices, self.other_rents)
+        player = Player()
+        street.set_owner(player)
+        street.add_house()
+        street.return_to_bank()
+        assert street.owner() is None
+        assert street.houses_num() == 0
+
+    def test_total_value(self):
+        street = Street(self.field_id, self.name, self.colour,
+                        self.rent, self.prices, self.other_rents)
+        street.add_house()
+        assert street.total_value() == street.price() / 2 + street.house_cost()
+        street.add_house()
+        assert street.total_value() == street.price() / 2 \
+            + street.house_cost() * 2

@@ -7,10 +7,6 @@ class FieldIdError(Exception):
     pass
 
 
-class DiceSumError(Exception):
-    pass
-
-
 class JailError(Exception):
     pass
 

@@ -1,6 +1,8 @@
 import classes.fields_from_json as ffjson
 from classes.board import Board
-from classes.field import PropertyField, SpecialField, HousesNumError, Street, MortgageError
+from classes.field import PropertyField, SpecialField, Street
+from classes.field import HousesNumError, MortgageError
+
 from classes.player import Player
 from classes.game import Game, PlayerError
 from classes.game_constants import GameConstants
@@ -286,7 +288,6 @@ class TestGameOtherMethods:
 
         monkeypatch.setattr(Game, 'current_dice_sum',
                             lambda s: GameConstants.MAX_FIELD_ID + 2)
-        # self.game.dice_roll()
         self.game.move_pawn_number_of_dots()
         self.game.start_field_bonus()
 

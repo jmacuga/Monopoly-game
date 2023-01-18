@@ -34,19 +34,32 @@ def menu_values():
 
 
 def print_welcome_text():
-    print('''
-$$\      $$\                                                   $$\\
-$$$\    $$$ |                                                  $$ |
-$$$$\  $$$$ | $$$$$$\  $$$$$$$\   $$$$$$\   $$$$$$\   $$$$$$\  $$ |$$\   $$\\
-$$\$$\$$ $$ |$$  __$$\ $$  __$$\ $$  __$$\ $$  __$$\ $$  __$$\ $$ |$$ |  $$ |
-$$ \$$$  $$ |$$ /  $$ |$$ |  $$ |$$ /  $$ |$$ /  $$ |$$ /  $$ |$$ |$$ |  $$ |
-$$ |\$  /$$ |$$ |  $$ |$$ |  $$ |$$ |  $$ |$$ |  $$ |$$ |  $$ |$$ |$$ |  $$ |
-$$ | \_/ $$ |\$$$$$$  |$$ |  $$ |\$$$$$$  |$$$$$$$  |\$$$$$$  |$$ |\$$$$$$$ |
-\__|     \__| \______/ \__|  \__| \______/ $$  ____/  \______/ \__| \____$$ |
-                                           $$ |                    $$\   $$ |
-                                           $$ |                    \$$$$$$  |
-                                           \__|                     \______/
-''')
+    banner = '''
+$$\\      $$\\                                                   $$\\
+$$$\\    $$$ |                                                  $$ |
+$$$$\\  $$$$ | $$$$$$\\  $$$$$$$\\   $$$$$$\\   $$$$$$\\   $$$$$$\\  $$ ''' +\
+        '''|$$\\   $$\\
+$$\\$$\\$$ $$ |$$  __$$\\ $$  __$$\\ $$  __$$\\ $$  __$$\\ $$  __$$\\''' +\
+        ''' $$ |$$ |  $$ |
+$$ \\$$$  $$ |$$ /  $$ |$$ |  $$ |$$ /  $$ |$$ /  $$ |$$ /  $$ |$$ |$$ |  $$ |
+$$ |\\$  /$$ |$$ |  $$ |$$ |  $$ |$$ |  $$ |$$ |  $$ |$$ |  $$ |$$ |$$ |  $$ |
+$$ | \\_/ $$ |\\$$$$$$  |$$ |  $$ |\\$$$$$$  |$$$$$$$  |\\$$$$$$  |$$ |''' +\
+        '''\\$$$$$$$ |
+\\__|     \\__| \\______/ \\__|  \\__| \\______/ $$  ____/  \\______/''' +\
+        ''' \\__| \\____$$ |
+                                           $$ |                    $$\\   $$ |
+                                           $$ |                    \\$$$$$$  |
+                                           \\__|                     \\______/
+'''
+    text = "\nWelcome to the Monopoly Game.\nYou may add up to " +\
+        f"{GameConstants.MAX_PLAYERS_NUM} players. " +\
+        f"The game ends when you reach {GameConstants.MAX_NUM_OF_ROUNDS}" +\
+        " rounds. \nRemember you can do your property menagement only" +\
+        " before you thow dice. \nThe winner is the last player who isn't" +\
+        " bancrupt, or the player who accumulates \nthe biggest fortune" +\
+        " in cash and property. "
+
+    print(banner + text)
 
 
 def play(game: Game, resumed: bool = False):
@@ -92,9 +105,9 @@ def add_one_player(game, names):
 
 def add_players(game):
     names = []
-    print('Enter name of first player:')
+    print('\nEnter the name of the first player:')
     add_one_player(game, names)
-    print('Enter name of second player:')
+    print('Enter the name of second player:')
     add_one_player(game, names)
     answer = True
     while len(game._players) < GameConstants.MAX_PLAYERS_NUM and answer:

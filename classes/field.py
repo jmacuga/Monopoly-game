@@ -27,20 +27,6 @@ class Field:
     def name(self) -> str:
         return self._name
 
-    def get_players_on_ids(self) -> List:
-        # returns list of ids of players that currently stand on field
-        return list(self._players_on.keys())
-
-    def put_player_on(self, player: Player) -> None:
-        if player.player_id() in self._players_on:
-            raise PlayerError('Player already on field')
-        self._players_on[player.player_id()] = player
-
-    def take_player_from(self, player: Player) -> None:
-        if player.player_id() not in self._players_on:
-            raise PlayerError('Player not on field')
-        self._players_on.pop(player.player_id())
-
     def __str__(self) -> str:
         return f'{self._name}\nField id: {self._field_id}'
 

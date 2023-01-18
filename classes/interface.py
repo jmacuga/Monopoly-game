@@ -263,7 +263,10 @@ def street_input(game):
     f_id = int_input()
     if f_id == 0:
         return 0
-    while not game.player_is_owner(f_id) \
+    elif f_id not in range(1, GameConstants.MAX_FIELD_ID + 1):
+        print("Field doesn't exist")
+        return 0
+    elif not game.player_is_owner(f_id) \
             and type(game.get_field_by_id(f_id)) is not Street:
         print('You are not owner of this field or this field is not a Street.')
         return 0
@@ -274,7 +277,10 @@ def property_input(game):
     f_id = int_input()
     if f_id == 0:
         return 0
-    while not game.player_is_owner(f_id):
+    elif f_id not in range(1, GameConstants.MAX_FIELD_ID + 1):
+        print("Field doesn't exist")
+        return 0
+    elif not game.player_is_owner(f_id):
         print('You are not owner of this field.')
         return 0
     return f_id

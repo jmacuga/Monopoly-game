@@ -8,6 +8,26 @@ from tabulate import tabulate
 
 
 class Game:
+    """Represents game state.
+
+    Attributes
+    ----------
+    _players  : list
+        List of players
+    _board : Board
+        board object used in game
+    _cur_player_id_in_array : int
+        index in players array of current player
+
+
+
+
+
+
+
+
+    """
+
     def __init__(self, board, players=None):
         self._players = players
         if players is None:
@@ -31,7 +51,6 @@ class Game:
     def prepare_game(self) -> None:
         self._current_player = self._players[self._cur_player_id_in_array]
         for player in self._players:
-            self._board.get_field_by_id(0).put_player_on(player)
             player.set_position(0)
             player.earn_money(int(GameConstants.INITIAL_MONEY_PP))
 
@@ -56,10 +75,10 @@ class Game:
         return sum(self._current_dice_roll)
 
     def move_pawn_number_of_dots(self) -> None:
-        self.current_field().take_player_from(self._current_player)
+        # self.current_field().take_player_from(self._current_player)
         self._current_player.set_dice_roll_sum(self.current_dice_sum())
         self._current_player.move_pawn()
-        self.current_field().put_player_on(self._current_player)
+        # self.current_field().put_player_on(self._current_player)
 
     def current_field(self) -> Field:
         field_id = self._current_player.current_pawn_position()
@@ -148,7 +167,7 @@ class Game:
         return True
 
     def is_house_to_sell(self, field):
-        return type(field) == Street and field.houses() > 0
+        return False if type(field) is not Street else field.houses_num() > 0
 
     def sell_hotel(self, field: Field) -> None:
         if field.hotel() and not field.is_mortgaged() \
@@ -238,11 +257,6 @@ class Game:
                 out_str += '\n' + tabulate(field.full_description_table(),
                                            tablefmt='rounded_grid')
         return out_str
-
-    def get_player_by_id(self, player_id: int) -> str:
-        for player in self._players:
-            if player.player_id() == player_id:
-                return player
 
     def get_current_field_owner_name(self) -> str:
         return self.current_field().owner().name()

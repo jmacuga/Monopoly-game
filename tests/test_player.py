@@ -85,24 +85,6 @@ def test_sell_property():
     assert player1._owned_property_fields == {2}
 
 
-def test_is_bancrupt_no_money_property():
-    player1 = Player()
-    player1.add_property(1)
-    player1._money = 0
-    assert player1.is_bancrupt() is False
-
-
-def test_is_bancrupt_no_property_money():
-    player1 = Player()
-    player1._money = 500
-    assert player1.is_bancrupt() is False
-
-
-def test_bancrupt():
-    player1 = Player()
-    assert player1.is_bancrupt()
-
-
 def test_passed_start_field():
     player1 = Player()
     player1.set_position(GameConstants.MAX_FIELD_ID - 2)

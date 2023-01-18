@@ -158,6 +158,13 @@ class PropertyField(Field):
             raise MortgageError('Field not mortgaged')
         self._mortgage = False
         self.update_rent()
+# TODO test
+
+    def return_to_bank(self):
+        self._owner = None
+        if self._mortgage:
+            self.lift_mortgage()
+        self.update_rent()
 
 
 class Street(PropertyField):
@@ -230,7 +237,7 @@ class Street(PropertyField):
     def total_value(self) -> int:
         if self.is_mortgaged():
             return 0
-        value = self.mortgage_price() + self._houses_num * \
+        value = 0.5 * self.price() + self._houses_num * \
             self.house_cost()
         value += self.hotel_cost() if self._hotel else 0
         return value
@@ -260,6 +267,13 @@ class Street(PropertyField):
         table.append(['number of houses', self._houses_num])
         table.append(['hotel', 'yes' if self._hotel else 'no'])
         return table
+# TODO test
+
+    def return_to_bank(self):
+        super().return_to_bank()
+        self._houses_num = 0
+        self._hotel = False
+        self.update_rent()
 
 
 class SpecialField(Field):

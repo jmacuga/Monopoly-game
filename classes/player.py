@@ -70,7 +70,7 @@ class Player:
         self._current_pawn_position = (
             self._current_pawn_position + self._current_dice_roll_sum) \
             % (GameConstants.MAX_FIELD_ID + 1)
-        if old_pos > self._current_pawn_position:
+        if self._current_dice_roll_sum > GameConstants.MAX_FIELD_ID - old_pos:
             self.passed_start_field = True
         else:
             self.passed_start_field = False
@@ -114,9 +114,6 @@ class Player:
 
     def owned_property_fields(self) -> Set[int]:
         return self._owned_property_fields
-
-    # def is_bancrupt(self) -> bool:
-    #     return len(self._owned_property_fields) == 0 and self.money() == 0
 
     def __str__(self) -> str:
         output = [['name', self._name],

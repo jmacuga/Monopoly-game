@@ -1,8 +1,8 @@
 import classes.fields_from_json as ffjson
 from classes.board import Board
-from classes.field import PropertyField, SpecialField, HousesNumError
+from classes.field import PropertyField, SpecialField, HousesNumError, Street, MortgageError
 from classes.player import Player
-from classes.game import Game
+from classes.game import Game, PlayerError
 from classes.game_constants import GameConstants
 import pytest
 
@@ -90,6 +90,12 @@ class TestGame:
         assert money_before1 < self.player1.money()
         assert money_before2 > self.player2.money()
 
+    def test_change_player_bancrupt(self):
+        self.game._current_player == self.player1
+        self.player2.is_bancrupt = True
+        self.game.change_player()
+        assert self.game._current_player == self.player1
+
 
 class TestHouseBuilding:
     property_fields = ffjson.property_fields_from_json(
@@ -110,12 +116,6 @@ class TestHouseBuilding:
     def test_owns_all_of_colour(self):
         self.player1._owned_property_fields = self.test_fields_set
         assert self.game.owns_all_of_colour(self.street1)
-
-    def test_is_street_owner_by_id(self):
-        assert self.game.is_street_owner_by_id(self.street_id1)
-        assert not self.game.is_street_owner_by_id(8)
-        self.player1.add_property(1)
-        assert not self.game.is_street_owner_by_id(1)
 
     def test_houses_build_evenly(self):
         self.player1._owned_property_fields = self.test_fields_set
@@ -193,6 +193,69 @@ class TestHouseBuilding:
         self.game.sell_hotel(self.street2)
 
 
+class TestGameWinThreePlayes:
+    property_fields = ffjson.property_fields_from_json(
+        PROPERTY_FIELDS)
+    num_of_colour = ffjson.number_of_colour_from_json(NUM_OF_COLOUR)
+    special_fields = ffjson.special_fields_from_json(SPECIAL_FIELDS)
+    board = Board(property_fields, num_of_colour, special_fields)
+    player1 = Player()
+    player2 = Player()
+    player3 = Player()
+    game = Game(board, [player1, player2, player3])
+    game.prepare_game()
+
+    def test_is_win_max_rounds(self):
+        self.game._total_moves = (GameConstants.MAX_NUM_OF_ROUNDS + 1) * \
+            len(self.game._players)
+        assert self.game.is_win()
+
+    def test_total_fortune(self):
+        self.game._total_moves = 0
+        fld5 = self.board.get_field_by_id(5)
+        fld7 = self.board.get_field_by_id(7)
+        self.player1.set_position(5)
+        assert type(fld5) == Street
+        self.game.buy_current_property()
+        self.player1.set_position(7)
+        self.game.buy_current_property()
+        self.game.build_house(fld5)
+        self.player1._money = 1000
+        assert self.game.total_fortune() == 1000 + fld5.house_cost() + \
+            fld5.price() / 2 + fld7.price()/2
+
+    def test_make_bancrupt(self):
+        self.player1.set_position(6)
+        self.game.buy_current_property()
+        fld6 = self.board.get_field_by_id(6)
+        self.game.mortgage(fld6)
+        self.game.make_bancrupt()
+        assert self.player1.money() == 0
+        assert self.game.total_fortune() == 0
+        assert fld6.is_mortgaged() is False
+        assert fld6.owner() is None
+
+    def test_is_win_bancrupcy(self):
+        assert not self.game.is_win()
+        self.game.change_player()
+        self.game.make_bancrupt()
+        assert self.player2.is_bancrupt
+        assert self.game.is_win()
+
+    def test_find_winner_ony_player(self):
+        assert self.game.find_winner() == self.player3
+
+    def test_find_winner_by_total_fortune(self):
+        self.player2.is_bancrupt = False
+        self.player2.add_property(8)
+        self.player2.add_property(1)
+        self.player2._money = 1500
+        self.player2._money = 1500
+        assert self.game.find_winner() == self.player2
+        self.player3._money = 10000
+        assert self.game.find_winner() == self.player3
+
+
 class TestGameOtherMethods:
     property_fields = ffjson.property_fields_from_json(
         PROPERTY_FIELDS)
@@ -219,8 +282,23 @@ class TestGameOtherMethods:
         self.player1._name = 'Monika'
         assert self.game.current_player_name() == 'Monika'
 
+    def test_start_field_bonus(self, monkeypatch):
 
-class TensGameWinThreePlayes:
+        monkeypatch.setattr(Game, 'current_dice_sum',
+                            lambda s: GameConstants.MAX_FIELD_ID + 2)
+        # self.game.dice_roll()
+        self.game.move_pawn_number_of_dots()
+        self.game.start_field_bonus()
+
+    def test_start_field_bonus_player_error(self, monkeypatch):
+        monkeypatch.setattr(Game, 'current_dice_sum',
+                            lambda s: 1)
+        self.game.move_pawn_number_of_dots()
+        with pytest.raises(PlayerError):
+            self.game.start_field_bonus()
+
+
+class TestMortgage:
     property_fields = ffjson.property_fields_from_json(
         PROPERTY_FIELDS)
     num_of_colour = ffjson.number_of_colour_from_json(NUM_OF_COLOUR)
@@ -228,18 +306,27 @@ class TensGameWinThreePlayes:
     board = Board(property_fields, num_of_colour, special_fields)
     player1 = Player()
     player2 = Player()
-    player3 = Player()
-    game = Game(board, [player1, player2, player3])
+    game = Game(board, [player1, player2])
     game.prepare_game()
+    id5 = 5
+    id7 = 7
+    fld5 = game.get_field_by_id(id5)
+    fld7 = game.get_field_by_id(id7)
+    player1.set_position(id5)
+    game.buy_current_property()
 
-    def test_is_win_max_rounds(self):
-        self.game._total_moves = GameConstants.MAX_NUM_OF_ROUNDS * \
-            len(self.game._players)
-        assert self.game.is_win()
+    def test_mortgage(self):
+        m = self.player1.money()
+        self.game.mortgage(self.fld5)
+        assert self.fld5.is_mortgaged()
+        assert self.player1.money() - m == self.fld5.mortgage_price()
 
-    def test_is_win_bancrupcy(self):
-        self.game._total_moves = 1
-        self.player1._money = 0
-        assert not self.game.is_win()
-        self.player2._money = 0
-        assert self.game.is_win()
+    def test_lift_mortgage(self):
+        self.game.lift_mortgage(self.fld5)
+
+    def test_lift_mortgage_house_exception(self):
+        self.player1.set_position(self.id7)
+        self.game.buy_current_property()
+        self.game.build_house(self.fld5)
+        with pytest.raises(MortgageError):
+            self.game.mortgage(self.fld5)

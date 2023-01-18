@@ -1,12 +1,13 @@
 [
     {
-        "chance_id": 0,
-        "text": "Income tax refund. Collect $20",
-        "action": "collect",
+        "card_id": 0,
+        "description": "Income tax refund. Collect $20",
+        "action": "earn",
         "money": 20
     },
     {
-        "text": "Doctor's fee. Pay $50",
+        "card_id": 1,
+        "description": "Doctor's fee. Pay $50",
         "action": "pay",
         "money": 50
     }

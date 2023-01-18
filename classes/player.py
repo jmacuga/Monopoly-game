@@ -37,7 +37,7 @@ class Player:
         self._money = 0
         self._current_pawn_position = None
         self.passed_start_field = False
-        self._is_bancrupt = False
+        self.is_bancrupt = False
 
     def player_id(self) -> int:
         return self._player_id

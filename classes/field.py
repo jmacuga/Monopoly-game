@@ -11,10 +11,6 @@ class HousesNumError(Exception):
     pass
 
 
-class HotelError(Exception):
-    pass
-
-
 class MortgageError(Exception):
     pass
 
@@ -186,15 +182,16 @@ class Street(PropertyField):
 
     def add_house(self) -> None:
         if self._hotel or self._houses_num >= 4:
-            raise ValueError
+            raise HousesNumError('There is already 4 houses or hotel on field')
         self._houses_num += 1
         self.update_rent()
 
     def add_hotel(self) -> None:
         if self._hotel or self._houses_num < 4:
-            raise ValueError
+            raise HousesNumError(
+                'House is already on field or not enough houses')
         self._hotel = True
-        self._houses_num -= 4
+        self._houses_num = 0
         self.update_rent()
 
     def update_rent(self) -> None:
@@ -218,15 +215,16 @@ class Street(PropertyField):
         return self._prices['hotel_cost']
 
     def remove_house(self) -> None:
-        if self._hotel or self.houses_num == 0:
-            return
+        if self._houses_num == 0 or self._hotel:
+            raise HousesNumError
         self._houses_num -= 1
         self.update_rent()
 
     def remove_hotel(self) -> None:
-        if self._hotel:
-            return
+        if not self._hotel:
+            raise HousesNumError
         self._hotel = False
+        self._houses_num = 4
         self.update_rent()
 
     def total_value(self) -> int:

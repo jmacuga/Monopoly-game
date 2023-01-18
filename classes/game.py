@@ -1,4 +1,4 @@
-from classes.field import Field, PlayerError, Street
+from classes.field import Field, PlayerError, Street, HousesNumError, MortgageError
 from random import randint
 from classes.game_constants import GameConstants
 from classes.player import Player
@@ -21,7 +21,7 @@ class Game:
     def win(self):
         return self._win
 
-    def player_is_owner(self, field_id: Field = None) -> bool:
+    def player_is_owner(self, field_id: int = None) -> bool:
         if field_id is None:
             return self.current_field().owner() == self._current_player
         else:
@@ -109,7 +109,7 @@ class Game:
 
     def hotels_build_evenly(self, field: Field) -> bool:
         for f in self._board.get_all_fields_of_colour(field.colour()):
-            if f.houses_num() < 4:
+            if f.houses_num() < 4 and not f.hotel():
                 return False
         return True
 
@@ -117,16 +117,37 @@ class Game:
         return field.houses_num() == 4
 
     def build_house(self, field: Field) -> None:
-        self._current_player.spend_money(field.house_cost())
-        field.add_house()
+        if self.owns_all_of_colour(field) \
+                and self.is_street_owner_by_id(field.field_id()) \
+                and self.houses_build_evenly(field) \
+                and not field.hotel() \
+                and self.can_afford(field.house_cost())\
+                and not field.is_mortgaged():
+            self._current_player.spend_money(field.house_cost())
+            field.add_house()
+        else:
+            raise HousesNumError(
+                'Not all conditions to build a house were met')
 
     def build_hotel(self, field: Field) -> None:
-        self._current_player.spend_money(field.hotel_cost())
-        field.add_hotel()
+        if self.owns_all_of_colour(field) \
+                and self.is_street_owner_by_id(field.field_id()) \
+                and self.hotels_build_evenly(field) \
+                and not field.hotel() \
+                and self.can_afford(field.hotel_cost())\
+                and not field.is_mortgaged()\
+                and self.is_enough_houses(field):
+            self._current_player.spend_money(field.hotel_cost())
+            field.add_hotel()
+        else:
+            raise HousesNumError(
+                'Not all conditions to build a hotel were met')
 
     def houses_removed_evenly(self, field):
+        if field.hotel():
+            return True
         for f in self._board.get_all_fields_of_colour(field.colour()):
-            if f.houses_num() > field.houses_num():
+            if f.houses_num() > field.houses_num() or f.hotel():
                 return False
         return True
 
@@ -134,21 +155,38 @@ class Game:
         return type(field) == Street and field.houses() > 0
 
     def sell_hotel(self, field: Field) -> None:
-        self._current_player.earn_money(field.hotel_cost())
-        field.remove_hotel()
+        if field.hotel() and not field.is_mortgaged() \
+                and self.player_is_owner(field.field_id()):
+            self._current_player.earn_money(field.hotel_cost())
+            field.remove_hotel()
+        else:
+            raise HousesNumError(
+                "No hotel on this field or field is mortgaged")
 
     def sell_house(self, field: Field):
-        self._current_player.earn_money(field.house_cost())
-        field.remove_house()
+        if not field.house() and self.houses_removed_evenly(field)\
+                and not field.is_mortgaged() \
+                and self.player_is_owner(field.field_id()):
+            self._current_player.earn_money(field.house_cost())
+            field.remove_house()
+        else:
+            raise HousesNumError("You cannot remove house from this field")
 
     def mortgage(self, field: Field) -> None:
-        field.do_mortgage()
-        self._current_player.earn_money(field.mortgage_price())
+        if self.player_is_owner(field.field_id()) \
+                and not self.houses_on_street(field):
+            field.do_mortgage()
+            self._current_player.earn_money(field.mortgage_price())
+        else:
+            raise MortgageError('You cannot mortgage this field')
 
     def lift_mortgage(self, field: Field) -> None:
-        field.lift_mortgage()
-        self._current_player.spend_money(
-            int(round(field.mortgage_price() * 1.1)))
+        if self.player_is_owner(field.fiel()):
+            field.lift_mortgage()
+            self._current_player.spend_money(
+                int(round(field.mortgage_price() * 1.1)))
+        else:
+            raise MortgageError('Ypu cannot lift mortgage from this field')
 
     def houses_on_street(self, field):
         return type(field) == Street and (field.hotel() or

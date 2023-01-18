@@ -1,5 +1,5 @@
 from classes.field import PropertyField, Street
-from classes.field import PlayerError
+from classes.field import PlayerError, HousesNumError
 from classes.player import Player
 import pytest
 
@@ -85,7 +85,7 @@ class TestStreetField:
         street.add_house()
         street.add_house()
         street.add_house()
-        with pytest.raises(ValueError):
+        with pytest.raises(HousesNumError):
             street.add_house()
 
     def test_add_hotel(self):
@@ -106,7 +106,7 @@ class TestStreetField:
         street.add_house()
         street.add_house()
         street.add_hotel()
-        with pytest.raises(ValueError):
+        with pytest.raises(HousesNumError):
             street.add_hotel()
 
     def test_too_many_houses(self):
@@ -114,7 +114,7 @@ class TestStreetField:
                         self.rent, self.prices, self.other_rents)
         street.add_house()
         street.add_house()
-        with pytest.raises(ValueError):
+        with pytest.raises(HousesNumError):
             street.add_hotel()
 
     def test_update_rent(self):

@@ -1,9 +1,10 @@
 import classes.fields_from_json as ffjson
 from classes.board import Board
-from classes.field import PropertyField, SpecialField
+from classes.field import PropertyField, SpecialField, HousesNumError
 from classes.player import Player
 from classes.game import Game
 from classes.game_constants import GameConstants
+import pytest
 
 PROPERTY_FIELDS = "database/property_fields.json"
 NUM_OF_COLOUR = "database/number_of_colour.json"
@@ -106,55 +107,90 @@ class TestHouseBuilding:
     street1 = board.get_field_by_id(street_id1)
     street2 = board.get_field_by_id(street_id2)
 
-    # def test_can_build_house_first_house(self):
-    #     self.player1._owned_property_fields = self.test_fields_set
-    #     assert self.game.can_build_house(self.street_id1)
+    def test_owns_all_of_colour(self):
+        self.player1._owned_property_fields = self.test_fields_set
+        assert self.game.owns_all_of_colour(self.street1)
 
-    # def test_can_buid_house_uneven_houses(self):
-    #     self.player1._owned_property_fields = self.test_fields_set
-    #     self.board.get_field_by_id(self.street_id1).add_house()
-    #     assert self.game.can_build_house(self.street_id1) is False
-    #     self.board.get_field_by_id(self.street_id2).add_house()
-    #     assert self.game.can_build_house(self.street_id1) is True
+    def test_is_street_owner_by_id(self):
+        assert self.game.is_street_owner_by_id(self.street_id1)
+        assert not self.game.is_street_owner_by_id(8)
+        self.player1.add_property(1)
+        assert not self.game.is_street_owner_by_id(1)
 
-    # def test_can_buid_house_fifth_house(self):
-    #     self.player1._owned_property_fields = self.test_fields_set
-    #     assert self.street1.houses_num() == 1
-    #     for _ in range(0, 3):
-    #         self.street1.add_house()
-    #         self.street2.add_house()
-    #     assert self.game.can_build_house(self.street_id1) is False
+    def test_houses_build_evenly(self):
+        self.player1._owned_property_fields = self.test_fields_set
+        self.board.get_field_by_id(self.street_id1).add_house()
+        assert self.game.houses_build_evenly(self.street1) is False
+        self.board.get_field_by_id(self.street_id2).add_house()
+        assert self.game.houses_build_evenly(self.street1) is True
 
-    # def test_can_build_hotel_not_enough_houses(self):
-    #     self.street1.remove_house()
-    #     assert self.street1.houses_num() == 3
-    #     assert self.street2.houses_num() == 4
-    #     assert self.game.can_build_hotel(self.street_id1) is False
+    def test_build_fifth_house(self):
+        self.player1._owned_property_fields = self.test_fields_set
+        assert self.street1.houses_num() == 1
+        for _ in range(0, 3):
+            self.street1.add_house()
+            self.street2.add_house()
+        with pytest.raises(HousesNumError):
+            self.game.build_house(self.street1)
 
-    # def test_can_build_hotel_uneven_houses(self):
-    #     assert self.game.can_build_hotel(self.street_id2) is False
+    def test_is_enough_houses(self):
+        self.street1.remove_house()
+        assert self.street1.houses_num() == 3
+        assert self.street2.houses_num() == 4
+        assert not self.game.is_enough_houses(self.street1)
 
-    # def test_can_build_hotel(self):
-    #     self.street1.add_house()
-    #     assert self.game.can_build_hotel(self.street_id1) is True
-    #     assert self.game.can_build_hotel(self.street_id2) is True
+    def test_hotels_build_evenly(self):
+        assert self.game.hotels_build_evenly(self.street2) is False
 
-    # def test_can_build_hotel_second_hotel(self):
-    #     self.street1.add_hotel()
-    #     assert self.game.can_build_hotel(self.street_id1) is False
+    def test_can_build_hotel(self):
+        self.street1.add_house()
+        assert self.street1.houses_num() == 4
+        assert self.street2.houses_num() == 4
 
-    # def test_can_build_house_not_owned_all_of_colour(self):
-    #     street_field_id = 6
-    #     self.player1._owned_property_fields.add(street_field_id)
-    #     assert self.game.can_build_house(street_field_id) is False
+        self.game.build_hotel(self.street1)
+        self.game.build_hotel(self.street2)
 
-    # def test_can_build_house_not_enough_money(self):
-    #     self.street1.remove_hotel()
-    #     self.street1.remove_house()
-    #     self.street2.remove_house()
-    #     assert self.game.can_build_house(self.street_id1)
-    #     self.player1._money = 10
-    #     assert self.game.can_build_house(self.street_id1) is False
+    def test_build_second_hotel(self):
+        with pytest.raises(HousesNumError):
+            self.street1.add_hotel()
+
+    def test_build_house_not_owned_all_of_colour(self):
+        street_field_id = 6
+        self.player1._owned_property_fields.add(street_field_id)
+        f = self.board.get_field_by_id(street_field_id)
+        with pytest.raises(HousesNumError):
+            self.game.build_house(f)
+
+    def test_build_house_not_enough_money(self):
+        self.street1.remove_hotel()
+        self.street1.remove_house()
+        assert self.street1.houses_num() == 3
+        self.game.build_house(self.street1)
+        self.player1._money = 10
+        with pytest.raises(HousesNumError):
+            self.game.build_house(self.street1)
+
+    def test_houses_removed_evenly_hotel(self):
+        assert self.street1.houses_num() == 4
+        assert self.street2.hotel()
+        assert self.game.houses_removed_evenly(self.street2)
+        assert not self.game.houses_removed_evenly(self.street1)
+
+    def test_houses_removed_evenly_houses(self):
+        self.street2.remove_hotel()
+        assert self.street2.houses_num() == 4
+        assert self.street1.houses_num() == 4
+        assert self.game.houses_removed_evenly(self.street1)
+        assert self.game.houses_removed_evenly(self.street2)
+        self.street1.remove_house()
+        assert self.street1.houses_num() == 3
+        assert not self.game.houses_removed_evenly(self.street1)
+        assert self.game.houses_removed_evenly(self.street2)
+
+    def test_sell_hotel(self):
+        self.street1.add_house()
+        self.street2.add_hotel()
+        self.game.sell_hotel(self.street2)
 
 
 class TestGameOtherMethods:
@@ -183,6 +219,19 @@ class TestGameOtherMethods:
         self.player1._name = 'Monika'
         assert self.game.current_player_name() == 'Monika'
 
+
+class TensGameWinThreePlayes:
+    property_fields = ffjson.property_fields_from_json(
+        PROPERTY_FIELDS)
+    num_of_colour = ffjson.number_of_colour_from_json(NUM_OF_COLOUR)
+    special_fields = ffjson.special_fields_from_json(SPECIAL_FIELDS)
+    board = Board(property_fields, num_of_colour, special_fields)
+    player1 = Player()
+    player2 = Player()
+    player3 = Player()
+    game = Game(board, [player1, player2, player3])
+    game.prepare_game()
+
     def test_is_win_max_rounds(self):
         self.game._total_moves = GameConstants.MAX_NUM_OF_ROUNDS * \
             len(self.game._players)
@@ -191,4 +240,6 @@ class TestGameOtherMethods:
     def test_is_win_bancrupcy(self):
         self.game._total_moves = 1
         self.player1._money = 0
+        assert not self.game.is_win()
+        self.player2._money = 0
         assert self.game.is_win()

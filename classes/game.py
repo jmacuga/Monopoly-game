@@ -1,9 +1,14 @@
-from classes.field import Field, PlayerError, Street
+from classes.field import Field, Street
 from classes.field import HousesNumError, MortgageError
 from random import randint
 from classes.game_constants import GameConstants
 from classes.player import Player
 from tabulate import tabulate
+
+
+class StartFieldError(Exception):
+    """Raised when player didn't pass start field, but bonus was given."""
+    pass
 
 
 class Game:
@@ -532,11 +537,11 @@ class Game:
 
         Raises
         ------
-        PlayerError
+        StartFieldError
             If the player didn't pass the start field.
         """
         if self._current_player.passed_start_field is False:
-            raise PlayerError("Player didn't pass start field")
+            raise StartFieldError("Player didn't pass start field")
         self._current_player.earn_money(int(GameConstants.START_FIELD_BONUS))
 
     def total_fortune(self, player: Player = None) -> int:

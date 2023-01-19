@@ -1,6 +1,7 @@
 from classes.game import Game
 from classes.field import PropertyField, SpecialField, Street
-from classes.game_constants import GameConstants, ChanceFieldAction
+from classes.game_constants import GameConstants
+from classes.chance_card import ChanceFieldAction
 from enum import IntEnum
 import os
 import sys

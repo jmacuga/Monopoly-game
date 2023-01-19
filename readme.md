@@ -2,27 +2,36 @@
 Konsolowa gra w Monopoly, dla co najmniej dwóch graczy. Rozgrywka odbywa się poprzez wybieranie przez gracza dostępnych opcji i w ten sposób decydowanie o kolejnych ruchach, zarządzanie nieruchomościami.
 ## Interfejs i rozgrywka
 #### __Dodawanie graczy__
-Po uruchomieniu gry wyświetla się baner powitalny oraz najaważniejsze informacje o aktualnej rozgrywce. Gracz jest poszony o wprowadzenie imion pierwszych dwóch graczy, oraz zapytany czy chce dodać więcej graczy.
+Po uruchomieniu gry wyświetla się baner powitalny oraz najaważniejsze informacje o aktualnej rozgrywce. Gracz jest proszony o wprowadzenie imion pierwszych dwóch graczy, oraz zapytany czy chce dodać więcej graczy.
+
+<img src="img/baner.png" width="650" height = "400"/>
 
 #### __Menu główne__
 W danym ruchu można dokonać akcji wybranych z głównego menu.
 
-Wybranie rzutu kośćmi powoduje automatyczną zmianę gracza, zarządzanie nieruchomościami, tzn. kupowanie domów i stawianie pól pod zastaw musi być dokonane przed ruchem.
+<img src="img/main_menu.png" width="400" height = "250"/>
+
+Wybranie rzutu kośćmi powoduje automatyczną zmianę gracza, zatem zarządzanie nieruchomościami, tzn. kupowanie domów i stawianie pól pod zastaw musi być dokonane przed ruchem.
 
 #### __Rzut kością__
-Po wybraniu opcji numer jeden pokazuje się pole na którym wylądowaliśmy i odpowiednie zapytaniue związane z rodzajem tego pola. W tabelce pola nieruchomości wymienione są jedynie najważniejsze parametry.
+Po wybraniu opcji numer jeden pokazuje się pole na którym wylądowaliśmy i odpowiednie zapytanie związane z rodzajem tego pola. W tabelce pola nieruchomości wymienione są jedynie najważniejsze parametry.
+
+<img src="img/dice_roll.png" width="200" height = "400"/>
 
 #### __Wyświetlenie aktualnego lub wszystkich graczy__
 Opcja wyświetlenia wszystkich graczy, lub własnych kart powoduje wyświetlenie się informacji o graczach oaz ich kartach w postaci tabel, dzięki czemu wszystkie informacje są łatwo dostępne i czytelne. Pod tabelką gracza znajdują się jego nieruchomości. Opcja wyświetlania nieruchomości aktualnego gracza wyświetla więcej parametrów np. ceny zakupu domów i hoteli.
 
+<img src="img/all_players.png" width="270" height = "400"/>
 
 #### __Zarządzanie nieruchomościami__
 
 Opcje 4 - 7 pozwalają a zarządzanie nieruchomościami. Wyświetlona zostaje lista nieruchomości należących do aktualnego gracza, a gracz dokonuje wyboru poprzez wpisanie numeru id wybranego pola.
 
 #### __Menu bankructwa__
-Jeśli gracz nie est w stanie zapłacić należności, ale ma wystarczająco majątku w nieruchomościach jest zmuszony wybrać którąś z opcji menu bankructwa. Po sprzedży domu/hotelu lub oddaniu pola pod zastaw, opłaca dług i gra toczy się dalej. Jeśli jego majątek jest zbyt mały, gracz bankrutuje i zostaje wyłączony z gry.
+Jeśli gracz nie jest w stanie zapłacić należności, ale ma wystarczająco majątku w nieruchomościach, jest zmuszony wybrać którąś z opcji menu bankructwa. Po sprzedży domu/hotelu lub oddaniu pola pod zastaw, opłaca dług i gra toczy się dalej. Jeśli jego majątek jest zbyt mały, gracz bankrutuje i zostaje wyłączony z gry.
 
+
+<img src="img/bancrupt_menu.png" width="520" height = "200"/>
 
 #### __Zapis gry__
 
@@ -33,10 +42,13 @@ Gracz ma możliwość zapisu gry do pliku o formacie pickle, musi w tym celu pod
 ## Wymagania i uruchomienie gry
 Użyte zewnętrzne moduły:
 ``tabulate==0.9.0``
+
 Aby uruchomić grę należy w katalogu monopoly uruchomić plik main.py:
+
 ``$python3 -m main``
 
 lub jeśli chcemy uruchomić rozpoczętą grę z pliku:
+
 ``$python3 -m main --load [filename]``
 
 ## Założenia projektowe i zasady Gry
@@ -45,10 +57,13 @@ Gra miała bazować na zasadach z oryginlnego monopoly ([link](https://www.hasbr
 ### Plansza
 Na planszy znajdują się pola trzech typów:
 - Pola ulice
+
 Mogą być kupowane, posiadacz wszystkich pól w danym kolorze może stawiać na nich domy i hotel.
 - Pola nieruchomości
+
 Mogą być kupowane, i pobierać od nich opłaty, ale nie można stawiać na nich domów
 - Pola Specjalne
+
 Nie mogą być kupowane, są to np. pole start, pole szansa, pole więzienie.
 
 ### Rozgrywka
@@ -70,16 +85,16 @@ Nie mogą być kupowane, są to np. pole start, pole szansa, pole więzienie.
 
 
 ### Koniec gry i zwycięzca
-Gra konczy się, gdy zostanie osiągnięta maksymalna liczba rund, lub pozostanie tylko jeden gracz, który nie jest bankrutem.
+Gra konczy się, gdy zostanie osiągnięta maksymalna liczba rund, lub pozostanie tylko jeden gracz, który nie jest bankrutem. Zycięzcą zostaje gracz, który uzbierał największy majątek w gotówce i nieruchomościach.
 
 ## Architektura projektu
 
 Projekt składa się z trzech modułów oraz pliku main.
 - classes - moduł zawierający pliki z implementacjami klas
 - database - moduł z plikami zawierającymi dane pól na planszy i stałymi wartościami wykorzystywanymi w grze
-- test - moduł zawiej=rający pliki z testami jednostkowymi zorganizowanymi w klasy
+- test - moduł zawierający pliki z testami jednostkowymi zorganizowanymi w klasy
 
-### Dane pól na planszy i kart
+### __Dane pól i kart__
 
 Dane pól są przechowywane w plikach w formacie json, w osobnym pliku pola nieruchomości i ulic, a w  osobnym pola specjalne.
 - Przykładowy obiekt pola nieruchomości __PropertyField__:
@@ -130,7 +145,7 @@ Dane pól są przechowywane w plikach w formacie json, w osobnym pliku pola nier
 Reprezentuje pole "nieruchomości"
 
 - dziedziczy po Field
-- obiekty tej klasy mogą być własnością danego gracza, ale nie mozna budować na nich domów
+- obiekty tej klasy mogą być własnością danego gracza, ale nie można budować na nich domów
 - każdy obiekt ma swój indeks oraz nazwę
 - przechowuje dane o opłatach innych niż podstawowa w postaci słownika
 
@@ -145,7 +160,7 @@ Reprezentuje pole "ulica".
 
 
 ### __Klasa Board__
-Reprezentuje planszę po której poruszjaą się gracze.
+Reprezentuje planszę po której poruszają się gracze.
 
 - przechowuje kolekcje obiektów dziedziczących po Field
 - przechowuje kolekcję kart szansy
@@ -189,19 +204,20 @@ Plik zawiera klasę GameConstants dziedziczącą po klasie IntEnum. Klasa ta prz
 
 ### __Interfejs__
 
-W pliku interface.py najważniejszą funkcją jest funcja play(game), która jest główną pętlą programu. Jes to jedyna funkcja wywołana w pliku main i ona wywołuje pozostałe funkcje interfejsu.
-Pozostałę funkcje odpowiadają za:
-    - Przyjęcie od użytkownika okreslonego inputu
-    - Wyświetlanie menu, informacji o użytkownikach i polach
-    - Wybieranie opcji z menu
-    - Sprawdzanie warunków do danej akcji (np do kupna domu) i wyświetlanie odpowiednich komunikatów w zależności od problemu
-    - Zapis obecnego stanu gry
-    - Odczyt stanu gry z pliku
+W pliku interface.py najważniejszą funkcją jest funcja play, która jest główną pętlą programu i jako argument przyjmuje obiekt klasy Game. Jest to jedyna funkcja wywołana w pliku main i ona wywołuje pozostałe funkcje interfejsu.
+
+Pozostałe funkcje odpowiadają za:
+- Przyjęcie od użytkownika okreslonego inputu
+- Wyświetlanie menu, informacji o użytkownikach i polach
+- Wybieranie opcji z menu
+- Sprawdzanie warunków do danej akcji (np. do kupna domu) i wyświetlanie odpowiednich komunikatów w zależności od problemu
+- Zapis obecnego stanu gry
+- Odczyt stanu gry z pliku
 ## Testy
 
 W sumie zaimplementowałam 78 testów. Testy zostały pogrupowane w pliki, w niektórych pliakach zostały pogrupowane w klasy.
 W pliku test_field.py znajduje sieę klasa TestField oraz TestStreetField, które testują odpowiednio klasę nieruchomości oraz klasę Street.
-Najwiękcej ptestów dotyczy klasy Game. W pliku test_game.py znajdują się następujące klasy:
+Najwięcej testów dotyczy klasy Game. W pliku test_game.py znajdują się następujące klasy:
 - TestGame
     - testująca główne funkcjonalności klasy Game
 - TestHouseBuilding
@@ -213,18 +229,18 @@ Najwiękcej ptestów dotyczy klasy Game. W pliku test_game.py znajdują się nas
 - TestMortgage
     - testująca stawianie pól pod zastaw
 
-Funkcji testujące dzielą się testowanymi obiektami, dlatego powinny być wykonywane sekwencyjnie, a nie pojedynczo. Podział testów na klasy pozwolił na testowanie sytuacji następujących po sobie, oraz różnych przypadków bez konieczności powtarzania dużej ilości kodu i tworzenia nowych obiektów w każdej funkcji testów.
+Funkcjie testujące dzielą się testowanymi obiektami, dlatego powinny być wykonywane sekwencyjnie, a nie pojedynczo. Podział testów na klasy pozwolił na testowanie sytuacji następujących po sobie, oraz różnych przypadków bez konieczności powtarzania dużej ilości kodu i tworzenia nowych obiektów w każdej funkcji.
 
-Interfejs oraz całościowe działąnie programu było testowane manualnie, przeze mnie oraz moich znajomych. Braliśmy pood uwagę różne scenariusze i staraliśmy się doprowadzić do danych sytuacji w grze. PRzetestowanie niektórych sytuacji, np. menu bankructwa wymagało utworzenia osobnego pliku testowego main, który uruchamiał grę w odpowiednim stanie.
+Interfejs oraz całościowe działąnie programu było testowane manualnie, przeze mnie oraz moich znajomych. Braliśmy pood uwagę różne scenariusze i staraliśmy się doprowadzić do danych sytuacji w grze. Przetestowanie niektórych sytuacji, np. menu bankructwa wymagało utworzenia osobnego pliku testowego main, który uruchamiał grę w odpowiednim stanie.
 
 ## Co nie zostało zaimplementowane
 - Sprzedawanie pól innym graczom
 - Komputerowy Gracz
-- Funckje odpowiadające za zapis i odczyt gry mogłyby być oddzielone od interfejsu
+- Funkcje odpowiadające za zapis i odczyt gry mogłyby być oddzielone od interfejsu
 - Pole więzienia
     - Klasa Player posiada natomiast parametry umożliwiającą implementację tej funkcjonalności
 
 ## Wnioski
-Największe wyzwania jakie spotkałam w trakcie realizacji projektu to przede wszystkim zaplanowanie struktury całego programu i połaczenie go z interfejsem. Jednocześnie najtrudniejsze w realizacji projektu było rozgraniczeie interfejsu i logiki gry.
+Największe wyzwania jakie spotkałam w trakcie realizacji projektu to przede wszystkim zaplanowanie struktury całego programu i połaczenie go z interfejsem. Jednocześnie najtrudniejsze w realizacji projektu było rozgraniczenie interfejsu i logiki gry.
 
-Moje wątpliwości dotyczyły też grupowania pól według kolorów, co moim zdaniem nie zostało zaimplementowane w najlepszy sposób, aczkolwiek okazał się on najszybszy i skuteczny. Plik number_of_colour.json przechowuje liczbę pól w danym kolorze, ale być moze każde pole powinno posiadać kolekcję indeksów pól w tym samym kolorze, lub osobna funkcj apowinna to zliczać.
+Moje wątpliwości dotyczyły też grupowania pól według kolorów, co moim zdaniem nie zostało zaimplementowane w najlepszy sposób, aczkolwiek okazał się on najszybszy i skuteczny. Plik number_of_colour.json przechowuje liczbę pól w danym kolorze, ale być moze każde pole powinno posiadać kolekcję indeksów pól w tym samym kolorze, lub osobna funkcja powinna to zliczać.

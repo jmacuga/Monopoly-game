@@ -2,9 +2,8 @@ import classes.fields_from_json as ffjson
 from classes.board import Board
 from classes.field import PropertyField, SpecialField, Street
 from classes.field import HousesNumError, MortgageError
-
 from classes.player import Player
-from classes.game import Game, PlayerError
+from classes.game import Game, StartFieldError
 from classes.game_constants import GameConstants
 import pytest
 
@@ -45,7 +44,6 @@ class TestGame:
         monkeypatch.setattr(Game, 'current_dice_sum', lambda s: sum((1, 1)))
         self.game.dice_roll()
         self.game.move_pawn_number_of_dots()
-        field = self.game.current_field()
         assert self.game._current_player.current_pawn_position() == 2
 
     def test_current_field_get_rent(self):
@@ -291,7 +289,7 @@ class TestGameOtherMethods:
         monkeypatch.setattr(Game, 'current_dice_sum',
                             lambda s: 1)
         self.game.move_pawn_number_of_dots()
-        with pytest.raises(PlayerError):
+        with pytest.raises(StartFieldError):
             self.game.start_field_bonus()
 
 

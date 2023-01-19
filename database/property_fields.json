@@ -9,8 +9,7 @@
             "base_price": 200
         },
         "other_rents": {
-            "mortgage": 100,
-            "owned_2": 50
+            "mortgage": 100
         }
     },
     {
@@ -23,8 +22,7 @@
             "base_price": 200
         },
         "other_rents": {
-            "mortgage": 100,
-            "owned_2": 50
+            "mortgage": 100
         }
     },
     {

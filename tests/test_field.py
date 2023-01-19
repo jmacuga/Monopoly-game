@@ -1,5 +1,5 @@
 from classes.field import PropertyField, Street
-from classes.field import PlayerError, HousesNumError
+from classes.field import HousesNumError
 from classes.player import Player
 import pytest
 

@@ -1,6 +1,6 @@
 from classes.player import Player, JailError
-import pytest
 from classes.game_constants import GameConstants
+import pytest
 
 
 def test_move_pawn():

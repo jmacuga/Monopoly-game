@@ -26,29 +26,6 @@ class TestField:
         self.field.set_owner(player)
         assert self.field.owner() == player
 
-    def test_put_player_on_field(self):
-        player = Player()
-        self.field.put_player_on(player)
-        assert player.player_id() in self.field.get_players_on_ids()
-
-    def test_put_player_on_exception(self):
-        player = Player()
-        self.field.put_player_on(player)
-        with pytest.raises(PlayerError):
-            self.field.put_player_on(player)
-
-    def test_take_player_from_field(self):
-        player = Player()
-        self.other_field.put_player_on(player)
-        assert player.player_id() in self.other_field.get_players_on_ids()
-        self.other_field.take_player_from(player)
-        assert player.player_id() not in self.other_field.get_players_on_ids()
-
-    def test_take_player_from_exception(self):
-        player = Player()
-        with pytest.raises(PlayerError):
-            self.field.take_player_from(player)
-
     def test_mortgage(self):
         self.field.do_mortgage()
         assert self.field.is_mortgaged()

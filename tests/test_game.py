@@ -26,8 +26,6 @@ class TestGame:
     game.prepare_game()
 
     def test_prepare_pawns_on_start(self):
-        assert self.board.get_field_by_id(0).get_players_on_ids(
-        ) == [self.player1.player_id(), self.player2.player_id()]
         for p in (self.player1, self.player2):
             assert p.money() == GameConstants.INITIAL_MONEY_PP
 
@@ -49,7 +47,6 @@ class TestGame:
         self.game.move_pawn_number_of_dots()
         field = self.game.current_field()
         assert self.game._current_player.current_pawn_position() == 2
-        assert self.player1.player_id() in field.get_players_on_ids()
 
     def test_current_field_get_rent(self):
         field = self.game.current_field()
@@ -73,11 +70,10 @@ class TestGame:
             _current_player._owned_property_fields
 
     def test_change_player(self):
-        assert self.game._cur_player_id_in_array == 0
+        assert self.game._current_player_index == 0
         self.game.change_player()
-        assert self.game._cur_player_id_in_array == 1
-        assert self.game._current_player.player_id() ==\
-            self.player2.player_id()
+        assert self.game._current_player_index == 1
+        assert self.game._current_player == self.player2
         assert self.game._current_player == self.player2
 
     def test_pay_rent(self):

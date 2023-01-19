@@ -1,7 +1,7 @@
 from classes.game import Game
 from classes.field import PropertyField, SpecialField, Street
-from enum import IntEnum
 from classes.game_constants import GameConstants, ChanceFieldAction
+from enum import IntEnum
 import os
 import sys
 import pickle
@@ -9,6 +9,7 @@ from tabulate import tabulate
 
 
 class MenuOption(IntEnum):
+    """Enum class containing available main menu options."""
     THROW_DICE = 1
     SEE_ALL = 2
     SEE_YOURS = 3
@@ -20,20 +21,27 @@ class MenuOption(IntEnum):
 
 
 class BancruptOption(IntEnum):
+    """Enum class containing available bancrupt menu options.
+
+    Enum class containing otpions available in the menu shown
+                            when player canot afford rent."""
     SEE_YOURS = 1
     SELL_HOUSE_HOTEL = 2
     MORTGAGE = 3
 
 
 def clear():
+    """Clears the terminal window."""
     return os.system('clear')
 
 
 def menu_values():
+    """Gets list of values of the ManuOption variables."""
     return [mem.value for mem in MenuOption]
 
 
 def print_welcome_text():
+    """Shows "Monopoly" banner and game instructions"""
     banner = '''
 $$\\      $$\\                                                   $$\\
 $$$\\    $$$ |                                                  $$ |
@@ -62,7 +70,19 @@ $$ | \\_/ $$ |\\$$$$$$  |$$ |  $$ |\\$$$$$$  |$$$$$$$  |\\$$$$$$  |$$ |''' +\
     print(banner + text)
 
 
-def play(game: Game, resumed: bool = False):
+def play(game: Game, resumed: bool = False) -> None:
+    """Plays the game.
+
+    Main game loop, adds players, sets up the game, shows main menu
+    in the loop and picks menu option based on player input.
+
+    Parameters
+    ----------
+    game : Game
+        game object that contains current game state.
+    resumed : bool, defaul= False
+        inidcates wether game is loaded form file.
+    """
     if not resumed:
         clear()
         print_welcome_text()
@@ -78,23 +98,22 @@ def play(game: Game, resumed: bool = False):
     game_over(game)
 
 
-def game_over(game):
+def game_over(game: Game) -> None:
+    """Prints final results, the winner and all players status. """
     print(f'\n\nGAME OVER. The winner is: {game.find_winner().name()}')
     print('\nFINAL RESULTS\n')
-    show_final_status(game)
-
-
-def show_final_status(game):
     show_all_players_status(game)
 
 
-def pause():
+def pause() -> None:
+    """Waits for player input to clear the terminal window."""
     print('\n[Press ENTER to conntinue]')
     input()
     clear()
 
 
-def add_one_player(game, names):
+def add_one_player(game: Game, names: list[str]) -> None:
+    """Asks player for the name of the new player and adds him to the game."""
     name = word_input()
     while name in names:
         print('Players must have unique names. Please enter again.')
@@ -103,7 +122,8 @@ def add_one_player(game, names):
     game.add_player(name)
 
 
-def add_players(game):
+def add_players(game: Game) -> None:
+    """Adds all game player objects based on the input."""
     names = []
     print('\nEnter the name of the first player:')
     add_one_player(game, names)
@@ -118,7 +138,11 @@ def add_players(game):
             add_one_player(game, names)
 
 
-def bool_input():
+def bool_input() -> bool:
+    """Asks player for yes/no input until he enters correct value.
+
+    If input is not provided, chooses 'yes'.
+    """
     try:
         answer = input().strip().lower().split()[0]
     except (IndexError):
@@ -132,7 +156,11 @@ def bool_input():
     return answer in true_answers
 
 
-def word_input():
+def word_input() -> str:
+    """Asks player for char sequence input until he enters correct value.
+
+    Does not protect from characters other than letters of alphabet.
+    """
     word = input().strip().split()
     if len(word) != 1:
         print('Please enter one word')
@@ -140,7 +168,8 @@ def word_input():
     return word[0]
 
 
-def int_input():
+def int_input() -> int:
+    """Asks player for positive integer input until he enters correct value."""
     players_input = input().strip()
     try:
         players_input = int(players_input)
@@ -153,7 +182,12 @@ def int_input():
     return players_input
 
 
-def make_property_transaction(game):
+def make_property_transaction(game: Game) -> None:
+    """Ask player if he wants to buy the property and makes the transaction.
+
+    Doesn't ask the player if he wants to buy the field if he can't afford it.
+    Shows the message with the amount of money payed and name of the field.
+    """
     if not game.can_afford(game.current_field().price()):
         print('\nUnfortunately you cannot afford this property')
         return
@@ -165,13 +199,19 @@ def make_property_transaction(game):
               f'for {game.current_field().name()}')
 
 
-def passing_start_field(game):
+def passing_start_field(game: Game) -> None:
+    """Give player start field bonus and print the message with the amouint."""
     game.start_field_bonus()
     print(f'\nYou earned {GameConstants.START_FIELD_BONUS}' +
           ' for passsing start field')
 
 
-def chance_field_action(game):
+def chance_field_action(game: Game) -> None:
+    """Show the chance card description and use it.
+
+    Get new chance card, and use it on the player. If the player can't afford
+    to pay the amount shown on the chance card, the bancrupt menu is shown.
+    """
     card = game.get_new_chance_card()
     print(card)
     if card.action() == ChanceFieldAction.PAY.value:
@@ -182,7 +222,13 @@ def chance_field_action(game):
     game.chance_field_action()
 
 
-def make_move(game):
+def make_move(game: Game) -> None:
+    """Makes whole players move and change player.
+
+    Gets new dice roll and moves player on the board. Shows dice roll result
+    and field table of the field taht player lands on. Chooses different
+     actions depending on the field type and changes player.
+    """
     game.dice_roll()
     print(f'\nYour dice roll result: {game.current_dice_roll()}')
     game.move_pawn_number_of_dots()
@@ -201,11 +247,11 @@ def make_move(game):
         pay_rent(game)
     elif type(field) == SpecialField and field.name() == 'chance':
         chance_field_action(game)
-
     game.change_player()
 
 
-def bancrupt_menu(menu_option, game):
+def bancrupt_menu(menu_option: int, game: Game) -> None:
+    """Picks menu action from the bancrupt menu."""
     if menu_option == BancruptOption.SEE_YOURS:
         show_current_player_status(game)
     elif menu_option == BancruptOption.SELL_HOUSE_HOTEL:
@@ -215,6 +261,7 @@ def bancrupt_menu(menu_option, game):
 
 
 def show_bancrupt_menu():
+    """Prints menu showt to the player when he cannot affors to pay."""
     text = '''BANCRUPT MENU press number key to pick option:
     1. See your cards and money
     2. Sell house/ hotel
@@ -224,7 +271,25 @@ def show_bancrupt_menu():
     print(text)
 
 
-def make_money_from_properties(game, amount):
+def make_money_from_properties(game: Game, amount: int) -> bool:
+    """Makes player sell his belongings, until he is able to pay given amount.
+
+    If the player's fortune is worth less than given amount, makes the player
+    bancrupt.Else prints bancrupt menu and makes him sell houses, hotels and
+    mortgage fields until he gets enough of cash.
+
+    Parameters
+    ----------
+    game : Game
+        game object representing game state.
+    amount : int
+        amount debt
+
+    Returns
+    -------
+    bool
+        Indicates if the player got the required amount.
+    """
     if game.total_fortune() > amount:
         while not game.can_afford(amount):
             print("You must sell some houses or mortgage properties.")
@@ -239,7 +304,12 @@ def make_money_from_properties(game, amount):
         return False
 
 
-def pay_rent(game):
+def pay_rent(game: Game) -> None:
+    """Makes player pay rent and shows him the message how much he payed.
+
+    If the player doesn't have enough money to pay, makes him get cash
+    from porperty or makes bancrupt.
+    """
     amount = game.current_field().current_rent()
     if not game.can_afford(amount):
         print('You cannot afford to pay this rent.')
@@ -251,15 +321,21 @@ def pay_rent(game):
         f' to {game.get_current_field_owner_name()}')
 
 
-def show_all_players_status(game):
+def show_all_players_status(game: Game) -> None:
+    """Prints description tables of each player."""
     print(game.players_description())
 
 
-def show_current_player_status(game, streets_only=False):
+def show_current_player_status(game: Game, streets_only: bool = False) -> None:
+    """SHows full description tables of the current player and his fields"""
     print(game.show_player_status(streets_only=streets_only))
 
 
-def street_input(game):
+def street_input(game: Game) -> int:
+    """Gets input of the index of property field that is Street.
+
+    Returns 0 if the input is equal to 0 or incorrect
+    """
     f_id = int_input()
     if f_id == 0:
         return 0
@@ -273,7 +349,11 @@ def street_input(game):
     return f_id
 
 
-def property_input(game):
+def property_input(game: Game) -> int:
+    """Gets input of the index of porperty field.
+
+    Returns 0 if the input is equal to 0 or incorrect.
+    """
     f_id = int_input()
     if f_id == 0:
         return 0
@@ -286,7 +366,23 @@ def property_input(game):
     return f_id
 
 
-def hotel_building_conditions(game, field):
+def hotel_building_conditions(game: Game, field: Street) -> bool:
+    """Checks if the conditions to build a hotel on given field are met.
+
+    Shows appropriate communicate and returns the result of the check.
+
+    Parameters
+    ----------
+    game: Game
+        game object representing game state.
+    field : Street
+        field that the hous is meant to be build on.
+
+    Returns
+    -------
+    bool
+        indicator if the hotel can be build
+    """
     if not game.can_build_hotel(field):
         print('There must be 4 houses on field to build hotel.')
         return False
@@ -303,7 +399,23 @@ def hotel_building_conditions(game, field):
     return True
 
 
-def house_building_conditions(game, field):
+def house_building_conditions(game: Game, field: Street) -> bool:
+    """Checks if the conditions to build a house on given field are met.
+
+    Shows appropriate communicate and returns the result of the check.
+
+    Parameters
+    ----------
+    game: Game
+        game object representing game state.
+    field : Street
+        field that the hous is meant to be build on.
+
+    Returns
+    -------
+    bool
+        indicator if the house can be build
+    """
     if not game.houses_build_evenly(field):
         print('You must build houses evenly on every field in the same' +
               'colour.')
@@ -320,7 +432,13 @@ def house_building_conditions(game, field):
     return True
 
 
-def buy_house_hotel(game):
+def buy_house_hotel(game: Game) -> None:
+    """Shows player his cards and builds house/hotel on chosen street.
+
+    Asks player to choose the field he wants to upgrade. After transaction
+    shows the message how much money did he spend. Cancels when input is
+    equal to 0.
+    """
     print('\nYour cards:')
     show_current_player_status(game, streets_only=True)
     print(
@@ -339,7 +457,23 @@ def buy_house_hotel(game):
         print(f'You paid {field.house_cost()} for a house on {field.name()} ')
 
 
-def house_selling_conditions(game, field):
+def house_selling_conditions(game: Game, field: Street) -> bool:
+    """Checks if the conditions to sell a house on given field are met.
+
+    Shows appropriate communicate and returns the result of the check.
+
+    Parameters
+    ----------
+    game: Game
+        game object representing game state.
+    field : Street
+        field that the house is meant to be sold.
+
+    Returns
+    -------
+    bool
+        indicator if the house can be sold.
+    """
     if not game.is_house_to_sell(field):
         print("There is no house to sell  from that field")
         return False
@@ -350,6 +484,12 @@ def house_selling_conditions(game, field):
 
 
 def sell_house_hotel(game):
+    """Shows the player his cards and sells house/hotel from chosen one.
+
+    Asks player to choose the field he wants to downgrade. After transaction
+    shows the message how much money did he earn. Cancels when input is
+    equal to 0.
+    """
     print('\nYour cards:')
     show_current_player_status(game, streets_only=True)
     print(
@@ -370,7 +510,23 @@ def sell_house_hotel(game):
               f' for selling house from {field.name()}')
 
 
-def mortgage_conditions(game, field):
+def mortgage_conditions(game: Game, field: PropertyField) -> bool:
+    """Checks if the conditions to mortgage a property were met.
+
+    Shows appropriate communicate and returns the result of the check.
+
+    Parameters
+    ----------
+    game: Game
+        game object representing game state.
+    field : PropertyField
+        field that is meant to be mortgaged.
+
+    Returns
+    -------
+    bool
+        indicator if the property can be mortgaged.
+    """
     if game.is_house_to_sell(field):
         print("You must sell all houses and hotels from field to mortgage.")
         return False
@@ -380,7 +536,13 @@ def mortgage_conditions(game, field):
     return True
 
 
-def mortgage(game):
+def mortgage(game: Game) -> None:
+    """Shows the player his cards and mortgages chosen one.
+
+    Asks player to choose the field he wants to mortgage. After transaction
+    shows the message how much money did he earn. Cancels when input is
+    equal to 0.
+    """
     print('\nYour cards:')
     show_current_player_status(game)
     print(
@@ -397,7 +559,23 @@ def mortgage(game):
             f' for mortage of {field.name()}')
 
 
-def lift_mortgage_conditions(game, field):
+def lift_mortgage_conditions(game: Game, field: PropertyField) -> bool:
+    """Checks if the conditions to lift mortgage a property were met.
+
+    Shows appropriate communicate and returns the result of the check.
+
+    Parameters
+    ----------
+    game: Game
+        game object representing game state.
+    field : PropertyField
+        field that mortgage is lifted.
+
+    Returns
+    -------
+    bool
+        indicator taht the mortgage can be lifted.
+    """
     if not field.is_mortgaged():
         print('You can lift mortage only from mortaged fields.')
         return False
@@ -405,6 +583,12 @@ def lift_mortgage_conditions(game, field):
 
 
 def lift_mortgage(game):
+    """Shows the player his cards and lifts mortgage on chosen one.
+
+    Asks player to choose the field he wants to lift mortgage. After
+    transaction shows the message how much money did he spend. Cancels
+    when input is equal to 0.
+    """
     print('\nYour mortaged cards:')
     show_current_player_status(game)
     print('To lift mortgage you have to pay additional 10% of'
@@ -421,7 +605,8 @@ def lift_mortgage(game):
             f'mortgage of {field.name()}')
 
 
-def save_and_exit(game):
+def save_and_exit(game: Game) -> None:
+    """Asks for the file name and saves the game object to pickle format."""
     print('Enter the name of file:')
     filename = word_input()
     with open(filename, 'wb') as pkl:
@@ -430,6 +615,7 @@ def save_and_exit(game):
 
 
 def menu_action(menu_option, game):
+    """Call function equivalent to the given menu option."""
     if menu_option == MenuOption.SEE_ALL:
         show_all_players_status(game)
     elif menu_option == MenuOption.SEE_YOURS:
@@ -448,7 +634,8 @@ def menu_action(menu_option, game):
         save_and_exit(game)
 
 
-def players_input_menu():
+def players_input_menu() -> any:
+    """Get players input and return if it's valid main menu option."""
     menu_option = int_input()
     if menu_option not in menu_values():
         print('Option unavailable')
@@ -456,11 +643,13 @@ def players_input_menu():
     return menu_option
 
 
-def current_player_info(game):
+def current_player_info(game: Game) -> None:
+    """Print the name of current player."""
     print(f'\nCURRENT PLAYER: { game.current_player_name()} ')
 
 
 def show_menu():
+    """Print Main menu."""
     text = '''MAIN MENU press number key to pick option:
     1. Throw dice to make your move
     2. See all players cards and money
@@ -474,10 +663,23 @@ def show_menu():
     print(text)
 
 
-def load_game(filename):
+def load_game(filename: str) -> None:
+    """Load game object from pickle file,
+
+    Parameters
+    ----------
+    filename : str
+        name of the pickle file with teh game object
+
+    Raises:
+    TypeError
+        when loaded object is not Game instance.
+    """
     try:
         with open(filename, 'rb') as pkl:
             game = pickle.load(pkl)
+        if type(game) is not Game:
+            raise TypeError('Type of loaded object is not Game')
         play(game, resumed=True)
     except FileNotFoundError as e:
         print(e)

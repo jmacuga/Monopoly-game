@@ -3,15 +3,6 @@ import pytest
 from classes.game_constants import GameConstants
 
 
-def test_id():
-    player1 = Player()
-    player2 = Player()
-    player1.set_players_id(0)
-    player2.set_players_id(1)
-    assert player1.player_id() == 0
-    assert player2.player_id() == 1
-
-
 def test_move_pawn():
     player1 = Player()
     assert player1.current_pawn_position() is None

@@ -3,7 +3,6 @@ from classes.field import HousesNumError, MortgageError
 from random import randint
 from classes.game_constants import GameConstants
 from classes.player import Player
-from typing import Tuple
 from tabulate import tabulate
 
 
@@ -104,7 +103,7 @@ class Game:
         dice2 = randint(1, 6)
         self._current_dice_roll = (dice1, dice2)
 
-    def current_dice_roll(self) -> Tuple[int, int]:
+    def current_dice_roll(self) -> tuple[int, int]:
         """Gets current dice roll"""
         return self._current_dice_roll
 
@@ -113,7 +112,7 @@ class Game:
         return sum(self._current_dice_roll)
 
     def move_pawn_number_of_dots(self) -> None:
-        """Moves pawn of current player by number of fields indicated by dice sum."""
+        """Moves current player pawn by number of fields indicated by dice."""
         self._current_player.set_dice_roll_sum(self.current_dice_sum())
         self._current_player.move_pawn()
 
@@ -316,7 +315,8 @@ class Game:
 
         Checks if you can remove house of the given field, by checking
         condition, that there must not be more than one house difference
-        betweeneach field in the same colour group and there must not be a hotel.
+        between each field in the same colour group and there must
+        not be a hotel.
 
         Parameters
         ----------
@@ -400,7 +400,7 @@ class Game:
             if the conditions to mortgage field had not been met
         """
         if self.player_is_owner(field.field_id()) \
-                and not self.is_house_to_sell()(field):
+                and not self.is_house_to_sell(field):
             field.do_mortgage()
             self._current_player.earn_money(field.mortgage_price())
         else:
@@ -448,8 +448,8 @@ class Game:
     def is_win(self) -> bool:
         """Check if the game is over.
 
-        Check if the number of rounds has reached the maximum or there is only one
-        non bancrupt player left.
+        Check if the number of rounds has reached the maximum or there is only
+        one non bancrupt player left.
 
         Returns
         -------

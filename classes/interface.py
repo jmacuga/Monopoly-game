@@ -371,7 +371,7 @@ def sell_house_hotel(game):
 
 
 def mortgage_conditions(game, field):
-    if game.houses_on_street(field):
+    if game.is_house_to_sell(field):
         print("You must sell all houses and hotels from field to mortgage.")
         return False
     if field.is_mortgaged():

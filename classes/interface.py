@@ -150,11 +150,11 @@ def bool_input() -> bool:
         return True
     false_answers = ['no', 'n']
     true_answers = ['yes', 'y']
-    if answer not in false_answers and \
-            answer not in true_answers:
+    if (answer not in false_answers) and \
+            (answer not in true_answers):
         print('Incorrect answer. Please enter yes or no')
         answer = bool_input()
-    return answer in true_answers
+    return answer if type(answer) is bool else answer in true_answers
 
 
 def word_input() -> str:

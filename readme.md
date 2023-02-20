@@ -229,18 +229,10 @@ Najwięcej testów dotyczy klasy Game. W pliku test_game.py znajdują się nast�
 - TestMortgage
     - testująca stawianie pól pod zastaw
 
-Funkcjie testujące dzielą się testowanymi obiektami, dlatego powinny być wykonywane sekwencyjnie, a nie pojedynczo. Podział testów na klasy pozwolił na testowanie sytuacji następujących po sobie, oraz różnych przypadków bez konieczności powtarzania dużej ilości kodu i tworzenia nowych obiektów w każdej funkcji.
-
 Interfejs oraz całościowe działąnie programu było testowane manualnie, przeze mnie oraz moich znajomych. Braliśmy pood uwagę różne scenariusze i staraliśmy się doprowadzić do danych sytuacji w grze. Przetestowanie niektórych sytuacji, np. menu bankructwa wymagało utworzenia osobnego pliku testowego main, który uruchamiał grę w odpowiednim stanie.
 
-## Co nie zostało zaimplementowane
+## To Do
 - Sprzedawanie pól innym graczom
 - Komputerowy Gracz
-- Funkcje odpowiadające za zapis i odczyt gry mogłyby być oddzielone od interfejsu
 - Pole więzienia
     - Klasa Player posiada natomiast parametry umożliwiającą implementację tej funkcjonalności
-
-## Wnioski
-Największe wyzwania jakie spotkałam w trakcie realizacji projektu to przede wszystkim zaplanowanie struktury całego programu i połaczenie go z interfejsem. Jednocześnie najtrudniejsze w realizacji projektu było rozgraniczenie interfejsu i logiki gry.
-
-Moje wątpliwości dotyczyły też grupowania pól według kolorów, co moim zdaniem nie zostało zaimplementowane w najlepszy sposób, aczkolwiek okazał się on najszybszy i skuteczny. Plik number_of_colour.json przechowuje liczbę pól w danym kolorze, ale być moze każde pole powinno posiadać kolekcję indeksów pól w tym samym kolorze, lub osobna funkcja powinna to zliczać.
